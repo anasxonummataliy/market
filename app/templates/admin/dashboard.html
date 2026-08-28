@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="uz" class="h-full bg-slate-900">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard — Market.uz Boshqaruv Markazi</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            400: '#818cf8',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            900: '#1e1b4b',
+                        },
+                        accent: {
+                            400: '#22d3ee',
+                            500: '#06b6d4',
+                            600: '#0891b2',
+                        }
+                    },
+                    boxShadow: {
+                        'glow': '0 0 25px -5px rgba(99, 102, 241, 0.3)',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        
+        /* Custom scrollbar for tables & panels */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+    </style>
+</head>
+<body class="h-full bg-slate-950 text-slate-100 antialiased selection:bg-brand-500 selection:text-white flex overflow-hidden">
+
+    <!-- Toast Notifications (Top-Right) -->
+    <div id="toastContainer" class="fixed top-6 right-6 z-50 flex flex-col gap-3 max-w-sm w-full px-4 sm:px-0 pointer-events-none">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    {% set is_danger = (category == 'error' or category == 'danger') %}
+                    <div class="pointer-events-auto bg-slate-900/95 backdrop-blur-md rounded-2xl shadow-2xl border p-4 flex items-start gap-3.5 {% if is_danger %}border-rose-500/40 text-rose-200{% else %}border-emerald-500/40 text-emerald-200{% endif %} animate-bounce-subtle">
+                        <div class="w-8 h-8 rounded-xl flex items-center justify-center flex-shrink-0 {% if is_danger %}bg-rose-500/20 text-rose-400{% else %}bg-emerald-500/20 text-emerald-400{% endif %}">
+                            <i class="fa-solid {% if is_danger %}fa-triangle-exclamation{% else %}fa-circle-check{% endif %} text-sm"></i>
+                        </div>
+                        <div class="flex-1 pt-0.5 min-w-0">
+                            <p class="text-xs font-semibold text-slate-200 leading-snug">{{ message }}</p>
+                        </div>
+                        <button onclick="this.parentElement.remove()" class="text-slate-400 hover:text-white p-1">
+                            <i class="fa-solid fa-xmark text-xs"></i>
+                        </button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Sidebar Navigation -->
+    <aside class="w-72 bg-slate-900/90 backdrop-blur-xl border-r border-slate-800/80 flex flex-col justify-between hidden lg:flex flex-shrink-0 z-20">
+        
+        <div>
+            <!-- Admin Logo & Header -->
+            <div class="p-6 border-b border-slate-800/80">
+                <a href="/admin/dashboard" class="flex items-center gap-3.5 group">
+                    <div class="w-11 h-11 rounded-2xl bg-gradient-to-tr from-brand-600 to-accent-500 flex items-center justify-center text-white text-xl font-bold shadow-glow group-hover:scale-105 transition">
+                        <i class="fa-solid fa-shield-halved"></i>
+                    </div>
+                    <div>
+                        <span class="text-lg font-black tracking-tight text-white flex items-center gap-1.5">
+                            Market<span class="text-brand-400">.uz</span>
+                        </span>
+                        <div class="flex items-center gap-1.5 mt-0.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Boshqaruv Paneli</span>
+                        </div>
+                    </div>
+                </a>
+            </div>
+
+            <!-- Navigation Links -->
+            <div class="p-4 space-y-1.5">
+                <p class="px-3 py-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Asosiy Menyular</p>
+
+                <a href="#overview" onclick="showTab('overview')" id="tab-btn-overview" class="tab-btn active flex items-center gap-3.5 px-3.5 py-3 rounded-2xl text-sm font-semibold bg-brand-600/20 text-brand-400 border border-brand-500/30 transition">
+                    <i class="fa-solid fa-chart-pie w-5 text-center"></i>
+                    <span>Umumiy Ko'rsatkichlar</span>
+                </a>
+
+                <a href="#users" onclick="showTab('users')" id="tab-btn-users" class="tab-btn flex items-center gap-3.5 px-3.5 py-3 rounded-2xl text-sm font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 border border-transparent transition">
+                    <i class="fa-solid fa-users w-5 text-center"></i>
+                    <span>Foydalanuvchilar</span>
+                    <span class="ml-auto bg-slate-800 text-slate-300 text-xs px-2.5 py-0.5 rounded-full font-bold">
+                        {{ users|length if users is defined else 0 }}
+                    </span>
+                </a>
+
+                <a href="#products" onclick="showTab('products')" id="tab-btn-products" class="tab-btn flex items-center gap-3.5 px-3.5 py-3 rounded-2xl text-sm font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 border border-transparent transition">
+                    <i class="fa-solid fa-boxes-stacked w-5 text-center"></i>
+                    <span>Mahsulotlar & E'lonlar</span>
+                    <span class="ml-auto bg-slate-800 text-slate-300 text-xs px-2.5 py-0.5 rounded-full font-bold">
+                        {{ products|length if products is defined else 0 }}
+                    </span>
+                </a>
+
+                <a href="/categories" class="flex items-center gap-3.5 px-3.5 py-3 rounded-2xl text-sm font-semibold text-slate-400 hover:text-white hover:bg-slate-800/60 border border-transparent transition">
+                    <i class="fa-solid fa-layer-group w-5 text-center"></i>
+                    <span>Kategoriyalar</span>
+                </a>
+
+                <div class="pt-4 mt-4 border-t border-slate-800/60">
+                    <p class="px-3 py-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider">Tezkor O'tish</p>
+                    
+                    <a href="/" class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800/40 transition">
+                        <i class="fa-solid fa-arrow-up-right-from-square w-5 text-center text-xs"></i>
+                        <span>Asosiy Saytga O'tish</span>
+                    </a>
+
+                    <a href="/profile" class="flex items-center gap-3.5 px-3.5 py-2.5 rounded-2xl text-sm font-medium text-slate-400 hover:text-white hover:bg-slate-800/40 transition">
+                        <i class="fa-solid fa-user-gear w-5 text-center"></i>
+                        <span>Mening Profilim</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Current Admin Footer Card -->
+        <div class="p-4 border-t border-slate-800/80 bg-slate-950/50">
+            <div class="flex items-center justify-between p-2.5 bg-slate-900 rounded-2xl border border-slate-800">
+                <div class="flex items-center gap-3 min-w-0">
+                    <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 to-accent-500 text-white flex items-center justify-center font-bold text-sm flex-shrink-0">
+                        {{ current_user.first_name[0]|upper if current_user.first_name else 'A' }}
+                    </div>
+                    <div class="min-w-0">
+                        <p class="text-xs font-bold text-white truncate">{{ current_user.first_name }} {{ current_user.last_name }}</p>
+                        <p class="text-[11px] text-brand-400 truncate">@{{ current_user.username }}</p>
+                    </div>
+                </div>
+                <a href="/auth/logout" class="p-2 text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-xl transition" title="Chiqish">
+                    <i class="fa-solid fa-power-off text-sm"></i>
+                </a>
+            </div>
+        </div>
+
+    </aside>
+
+    <!-- Main Content Body -->
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+        
+        <!-- Top Nav Bar -->
+        <header class="h-20 bg-slate-900/60 backdrop-blur-xl border-b border-slate-800/80 px-6 sm:px-8 flex items-center justify-between gap-4 z-10">
+            
+            <div class="flex items-center gap-4">
+                <!-- Mobile Menu Button -->
+                <button onclick="toggleMobileSidebar()" class="lg:hidden p-2 text-slate-400 hover:text-white rounded-xl hover:bg-slate-800 focus:outline-none">
+                    <i class="fa-solid fa-bars text-lg"></i>
+                </button>
+                
+                <div>
+                    <h1 class="text-lg sm:text-xl font-black text-white tracking-tight">Admin Markazi</h1>
+                    <p class="text-xs text-slate-400 hidden sm:block">Market.uz platformasi boshqaruvi va monitoringi</p>
+                </div>
+            </div>
+
+            <!-- Top Actions -->
+            <div class="flex items-center gap-3">
+                <a href="/" class="hidden sm:inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold px-4 py-2 rounded-xl border border-slate-700 transition">
+                    <i class="fa-solid fa-store"></i>
+                    <span>Saytni Ko'rish</span>
+                </a>
+
+                <a href="/auth/logout" class="inline-flex items-center gap-2 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/20 text-xs font-bold px-4 py-2 rounded-xl transition">
+                    <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    <span class="hidden sm:inline">Chiqish</span>
+                </a>
+            </div>
+        </header>
+
+        <!-- Main Workspace Area -->
+        <main class="flex-1 overflow-y-auto p-6 sm:p-8 space-y-8">
+            
+            <!-- SECTION 1: OVERVIEW & STATS -->
+            <section id="tab-content-overview" class="space-y-8">
+                
+                <!-- Quick KPI Stats Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                    
+                    <!-- Stat Card 1: Users -->
+                    <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 relative overflow-hidden group hover:border-brand-500/50 transition">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Jami Foydalanuvchilar</span>
+                            <div class="w-10 h-10 rounded-2xl bg-brand-500/10 text-brand-400 border border-brand-500/20 flex items-center justify-center text-lg">
+                                <i class="fa-solid fa-users"></i>
+                            </div>
+                        </div>
+                        <p class="text-3xl font-black text-white mt-4">{{ users|length if users is defined else 0 }}</p>
+                        <div class="flex items-center gap-1.5 text-xs text-emerald-400 mt-2 font-medium">
+                            <i class="fa-solid fa-circle-check"></i>
+                            <span>Barcha ro'yxatdan o'tganlar</span>
+                        </div>
+                    </div>
+
+                    <!-- Stat Card 2: Admins -->
+                    <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 relative overflow-hidden group hover:border-amber-500/50 transition">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Administratorlar</span>
+                            <div class="w-10 h-10 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center justify-center text-lg">
+                                <i class="fa-solid fa-shield-halved"></i>
+                            </div>
+                        </div>
+                        <p class="text-3xl font-black text-white mt-4">
+                            {{ users|selectattr('is_admin')|list|length if users is defined else 0 }}
+                        </p>
+                        <div class="flex items-center gap-1.5 text-xs text-amber-400 mt-2 font-medium">
+                            <i class="fa-solid fa-user-shield"></i>
+                            <span>To'liq ruxsatga ega</span>
+                        </div>
+                    </div>
+
+                    <!-- Stat Card 3: Products -->
+                    <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 relative overflow-hidden group hover:border-accent-500/50 transition">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Jami E'lonlar</span>
+                            <div class="w-10 h-10 rounded-2xl bg-accent-500/10 text-accent-400 border border-accent-500/20 flex items-center justify-center text-lg">
+                                <i class="fa-solid fa-boxes-stacked"></i>
+                            </div>
+                        </div>
+                        <p class="text-3xl font-black text-white mt-4">{{ products|length if products is defined else 0 }}</p>
+                        <div class="flex items-center gap-1.5 text-xs text-cyan-400 mt-2 font-medium">
+                            <i class="fa-solid fa-tags"></i>
+                            <span>Saytdagi barcha mahsulotlar</span>
+                        </div>
+                    </div>
+
+                    <!-- Stat Card 4: Active Listings -->
+                    <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 relative overflow-hidden group hover:border-emerald-500/50 transition">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold uppercase tracking-wider text-slate-400">Tasdiqlangan</span>
+                            <div class="w-10 h-10 rounded-2xl bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 flex items-center justify-center text-lg">
+                                <i class="fa-solid fa-badge-check"></i>
+                            </div>
+                        </div>
+                        <p class="text-3xl font-black text-white mt-4">
+                            {{ products|selectattr('is_approved')|list|length if products is defined else 0 }}
+                        </p>
+                        <div class="flex items-center gap-1.5 text-xs text-emerald-400 mt-2 font-medium">
+                            <i class="fa-solid fa-circle-dot"></i>
+                            <span>Faol e'lonlar</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- Recent Activity & Quick Preview Split -->
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    
+                    <!-- Users Preview Box -->
+                    <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 space-y-4">
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                            <div class="flex items-center gap-2.5">
+                                <i class="fa-solid fa-users text-brand-400"></i>
+                                <h3 class="font-bold text-white text-base">So'nggi Foydalanuvchilar</h3>
+                            </div>
+                            <button onclick="showTab('users')" class="text-xs text-brand-400 hover:text-brand-300 font-semibold">
+                                Hammasini ko'rish &rarr;
+                            </button>
+                        </div>
+
+                        <div class="space-y-3">
+                            {% if users is defined and users %}
+                                {% for user in users[:5] %}
+                                    <div class="flex items-center justify-between p-3 bg-slate-950/60 rounded-2xl border border-slate-800/60">
+                                        <div class="flex items-center gap-3">
+                                            <div class="w-9 h-9 rounded-xl bg-slate-800 text-brand-400 flex items-center justify-center font-bold text-xs">
+                                                {{ user.first_name[0]|upper if user.first_name else user.username[0]|upper }}
+                                            </div>
+                                            <div>
+                                                <p class="text-xs font-bold text-white">{{ user.first_name }} {{ user.last_name }}</p>
+                                                <p class="text-[11px] text-slate-400">@{{ user.username }}</p>
+                                            </div>
+                                        </div>
+                                        <div class="text-right">
+                                            {% if user.is_admin %}
+                                                <span class="px-2 py-0.5 text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-full">Admin</span>
+                                            {% else %}
+                                                <span class="px-2 py-0.5 text-[10px] font-semibold bg-slate-800 text-slate-400 rounded-full">User</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <p class="text-xs text-slate-500 text-center py-6">Foydalanuvchilar mavjud emas</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                    <!-- Products Preview Box -->
+                    <div class="bg-slate-900/80 border border-slate-800 rounded-3xl p-6 space-y-4">
+                        <div class="flex items-center justify-between border-b border-slate-800 pb-4">
+                            <div class="flex items-center gap-2.5">
+                                <i class="fa-solid fa-boxes-stacked text-accent-400"></i>
+                                <h3 class="font-bold text-white text-base">So'nggi E'lonlar</h3>
+                            </div>
+                            <button onclick="showTab('products')" class="text-xs text-accent-400 hover:text-accent-300 font-semibold">
+                                Hammasini ko'rish &rarr;
+                            </button>
+                        </div>
+
+                        <div class="space-y-3">
+                            {% if products is defined and products %}
+                                {% for prod in products[:5] %}
+                                    <div class="flex items-center justify-between p-3 bg-slate-950/60 rounded-2xl border border-slate-800/60">
+                                        <div class="flex items-center gap-3 min-w-0">
+                                            <div class="w-9 h-9 rounded-xl bg-slate-800 text-accent-400 flex items-center justify-center font-bold text-sm flex-shrink-0">
+                                                <i class="fa-solid fa-box"></i>
+                                            </div>
+                                            <div class="min-w-0">
+                                                <p class="text-xs font-bold text-white truncate">{{ prod.title }}</p>
+                                                <p class="text-[11px] text-slate-400 truncate">{{ prod.price }} so'm</p>
+                                            </div>
+                                        </div>
+                                        <div class="text-right flex-shrink-0">
+                                            {% if prod.is_approved %}
+                                                <span class="px-2 py-0.5 text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full">Tasdiqlangan</span>
+                                            {% else %}
+                                                <span class="px-2 py-0.5 text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-full">Kutilmoqda</span>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                {% endfor %}
+                            {% else %}
+                                <p class="text-xs text-slate-500 text-center py-6">Mahsulotlar mavjud emas</p>
+                            {% endif %}
+                        </div>
+                    </div>
+
+                </div>
+
+            </section>
+
+
+            <!-- SECTION 2: USERS FULL TABLE -->
+            <section id="tab-content-users" class="space-y-6 hidden">
+                
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-white tracking-tight">Foydalanuvchilar Ro'yxati</h2>
+                        <p class="text-xs text-slate-400">Tizimda ro'yxatdan o'tgan barcha akkauntlar</p>
+                    </div>
+
+                    <!-- Live User Search -->
+                    <div class="relative max-w-xs w-full">
+                        <input 
+                            type="text" 
+                            id="userSearchInput" 
+                            onkeyup="filterUsersTable()" 
+                            placeholder="Foydalanuvchini qidirish..."
+                            class="w-full bg-slate-900 text-white placeholder-slate-500 text-xs pl-9 pr-4 py-2.5 rounded-xl border border-slate-800 focus:border-brand-500 focus:outline-none"
+                        >
+                        <div class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Table Card -->
+                <div class="bg-slate-900/80 border border-slate-800 rounded-3xl overflow-hidden shadow-xl">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs text-slate-300" id="usersTable">
+                            <thead class="bg-slate-950/80 text-slate-400 uppercase text-[10px] font-bold tracking-wider border-b border-slate-800">
+                                <tr>
+                                    <th class="px-6 py-4">ID</th>
+                                    <th class="px-6 py-4">Foydalanuvchi</th>
+                                    <th class="px-6 py-4">Username</th>
+                                    <th class="px-6 py-4">Roli</th>
+                                    <th class="px-6 py-4">A'zo bo'lgan</th>
+                                    <th class="px-6 py-4 text-center">E'lonlari</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-800/60">
+                                {% if users is defined and users %}
+                                    {% for user in users %}
+                                        <tr class="user-row hover:bg-slate-800/40 transition">
+                                            <td class="px-6 py-4 font-mono text-slate-400">#{{ user.id }}</td>
+                                            <td class="px-6 py-4">
+                                                <div class="flex items-center gap-3">
+                                                    <div class="w-8 h-8 rounded-xl bg-brand-600/20 text-brand-400 border border-brand-500/20 flex items-center justify-center font-bold text-xs">
+                                                        {{ user.first_name[0]|upper if user.first_name else user.username[0]|upper }}
+                                                    </div>
+                                                    <span class="font-bold text-white">{{ user.first_name }} {{ user.last_name }}</span>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 font-semibold text-brand-400">@{{ user.username }}</td>
+                                            <td class="px-6 py-4">
+                                                {% if user.is_admin %}
+                                                    <span class="px-2.5 py-1 text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-full inline-flex items-center gap-1">
+                                                        <i class="fa-solid fa-shield-halved text-[9px]"></i> Admin
+                                                    </span>
+                                                {% else %}
+                                                    <span class="px-2.5 py-1 text-[10px] font-semibold bg-slate-800 text-slate-300 rounded-full">
+                                                        Foydalanuvchi
+                                                    </span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="px-6 py-4 text-slate-400">
+                                                {{ user.created_at.strftime('%d.%m.%Y %H:%M') if user.created_at else '-' }}
+                                            </td>
+                                            <td class="px-6 py-4 text-center">
+                                                <span class="bg-slate-800 text-slate-200 px-2.5 py-1 rounded-lg font-bold">
+                                                    {{ user.products|length if user.products is defined else 0 }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="6" class="px-6 py-12 text-center text-slate-500 text-xs">
+                                            Hech qanday foydalanuvchi topilmadi
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </section>
+
+
+            <!-- SECTION 3: PRODUCTS FULL TABLE -->
+            <section id="tab-content-products" class="space-y-6 hidden">
+                
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <h2 class="text-xl font-bold text-white tracking-tight">Mahsulotlar & E'lonlar Ro'yxati</h2>
+                        <p class="text-xs text-slate-400">Platformadagi barcha e'lonlar va ularning statusi</p>
+                    </div>
+
+                    <!-- Live Product Search -->
+                    <div class="relative max-w-xs w-full">
+                        <input 
+                            type="text" 
+                            id="productSearchInput" 
+                            onkeyup="filterProductsTable()" 
+                            placeholder="E'lonlarni qidirish..."
+                            class="w-full bg-slate-900 text-white placeholder-slate-500 text-xs pl-9 pr-4 py-2.5 rounded-xl border border-slate-800 focus:border-accent-500 focus:outline-none"
+                        >
+                        <div class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500 text-xs">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Products Table Card -->
+                <div class="bg-slate-900/80 border border-slate-800 rounded-3xl overflow-hidden shadow-xl">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs text-slate-300" id="productsTable">
+                            <thead class="bg-slate-950/80 text-slate-400 uppercase text-[10px] font-bold tracking-wider border-b border-slate-800">
+                                <tr>
+                                    <th class="px-6 py-4">ID</th>
+                                    <th class="px-6 py-4">Mahsulot Nomi</th>
+                                    <th class="px-6 py-4">Narxi</th>
+                                    <th class="px-6 py-4">Sotuvchi (Egasi)</th>
+                                    <th class="px-6 py-4">Holati</th>
+                                    <th class="px-6 py-4">Qo'shilgan sana</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-800/60">
+                                {% if products is defined and products %}
+                                    {% for prod in products %}
+                                        <tr class="product-row hover:bg-slate-800/40 transition">
+                                            <td class="px-6 py-4 font-mono text-slate-400">#{{ prod.id }}</td>
+                                            <td class="px-6 py-4 font-bold text-white max-w-xs truncate">
+                                                <div class="flex items-center gap-2.5">
+                                                    <i class="fa-solid fa-box text-accent-400"></i>
+                                                    <span>{{ prod.title }}</span>
+                                                </div>
+                                            </td>
+                                            <td class="px-6 py-4 font-extrabold text-brand-400">{{ prod.price }} so'm</td>
+                                            <td class="px-6 py-4 text-slate-300">
+                                                {% if prod.owner %}
+                                                    <span class="font-semibold text-white">{{ prod.owner.first_name }}</span>
+                                                    <span class="text-[11px] text-slate-400">(@{{ prod.owner.username }})</span>
+                                                {% else %}
+                                                    <span class="text-slate-500">ID: {{ prod.user_id }}</span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="px-6 py-4">
+                                                {% if prod.is_approved %}
+                                                    <span class="px-2.5 py-1 text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full inline-flex items-center gap-1">
+                                                        <i class="fa-solid fa-circle-check text-[9px]"></i> Tasdiqlangan
+                                                    </span>
+                                                {% else %}
+                                                    <span class="px-2.5 py-1 text-[10px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20 rounded-full inline-flex items-center gap-1">
+                                                        <i class="fa-solid fa-clock text-[9px]"></i> Kutilmoqda
+                                                    </span>
+                                                {% endif %}
+                                            </td>
+                                            <td class="px-6 py-4 text-slate-400">
+                                                {{ prod.created_at.strftime('%d.%m.%Y %H:%M') if prod.created_at else '-' }}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="6" class="px-6 py-12 text-center text-slate-500 text-xs">
+                                            Hech qanday mahsulot yoki e'lon topilmadi
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </section>
+
+        </main>
+
+    </div>
+
+    <!-- Mobile Drawer Sidebar (Hidden by default) -->
+    <div id="mobileSidebar" class="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm hidden lg:hidden">
+        <div class="w-72 h-full bg-slate-900 border-r border-slate-800 p-6 flex flex-col justify-between">
+            <div class="space-y-6">
+                <div class="flex items-center justify-between pb-4 border-b border-slate-800">
+                    <span class="text-base font-black text-white">Admin Panel</span>
+                    <button onclick="toggleMobileSidebar()" class="text-slate-400 hover:text-white p-1">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+                <div class="space-y-2">
+                    <button onclick="showTab('overview'); toggleMobileSidebar();" class="w-full text-left px-4 py-3 rounded-xl text-sm font-semibold bg-slate-800 text-white flex items-center gap-3">
+                        <i class="fa-solid fa-chart-pie text-brand-400"></i> Ko'rsatkichlar
+                    </button>
+                    <button onclick="showTab('users'); toggleMobileSidebar();" class="w-full text-left px-4 py-3 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-800 flex items-center gap-3">
+                        <i class="fa-solid fa-users text-brand-400"></i> Foydalanuvchilar
+                    </button>
+                    <button onclick="showTab('products'); toggleMobileSidebar();" class="w-full text-left px-4 py-3 rounded-xl text-sm font-semibold text-slate-300 hover:bg-slate-800 flex items-center gap-3">
+                        <i class="fa-solid fa-boxes-stacked text-accent-400"></i> Mahsulotlar
+                    </button>
+                </div>
+            </div>
+            <div class="pt-6 border-t border-slate-800 space-y-2">
+                <a href="/" class="block text-center py-2.5 px-4 rounded-xl text-xs font-semibold bg-slate-800 text-slate-200">Asosiy saytga o'tish</a>
+                <a href="/auth/logout" class="block text-center py-2.5 px-4 rounded-xl text-xs font-bold bg-rose-500/20 text-rose-300">Chiqish</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Interactive Scripts -->
+    <script>
+        function showTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('[id^="tab-content-"]').forEach(el => el.classList.add('hidden'));
+            
+            // Remove active classes on buttons
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.remove('bg-brand-600/20', 'text-brand-400', 'border-brand-500/30');
+                btn.classList.add('text-slate-400', 'border-transparent');
+            });
+
+            // Show current tab content
+            const activeContent = document.getElementById(`tab-content-${tabName}`);
+            if (activeContent) activeContent.classList.remove('hidden');
+
+            // Highlight active button
+            const activeBtn = document.getElementById(`tab-btn-${tabName}`);
+            if (activeBtn) {
+                activeBtn.classList.add('bg-brand-600/20', 'text-brand-400', 'border-brand-500/30');
+                activeBtn.classList.remove('text-slate-400', 'border-transparent');
+            }
+        }
+
+        function toggleMobileSidebar() {
+            const sidebar = document.getElementById('mobileSidebar');
+            if (sidebar) sidebar.classList.toggle('hidden');
+        }
+
+        // Live search in users table
+        function filterUsersTable() {
+            const query = document.getElementById('userSearchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('.user-row');
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(query) ? '' : 'none';
+            });
+        }
+
+        // Live search in products table
+        function filterProductsTable() {
+            const query = document.getElementById('productSearchInput').value.toLowerCase();
+            const rows = document.querySelectorAll('.product-row');
+            rows.forEach(row => {
+                const text = row.innerText.toLowerCase();
+                row.style.display = text.includes(query) ? '' : 'none';
+            });
+        }
+    </script>
+</body>
+</html>

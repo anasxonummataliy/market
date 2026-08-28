@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="uz" class="h-full bg-slate-950">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Kirish — Market.uz Boshqaruv Paneli</title>
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                        },
+                        accent: {
+                            500: '#06b6d4',
+                            600: '#0891b2',
+                        }
+                    },
+                    boxShadow: {
+                        'glow': '0 0 35px -5px rgba(99, 102, 241, 0.35)',
+                        'glow-accent': '0 0 35px -5px rgba(6, 182, 212, 0.35)',
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+        
+        .admin-glow-bg {
+            background: radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.15) 0%, rgba(15, 23, 42, 0) 70%);
+        }
+        
+        /* Toast Notifications Keyframes */
+        @keyframes toastSlideInRight {
+            0% { transform: translateX(120%); opacity: 0; }
+            100% { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes toastSlideOutRight {
+            0% { transform: translateX(0); opacity: 1; }
+            100% { transform: translateX(120%); opacity: 0; }
+        }
+        .toast-item { animation: toastSlideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        .toast-item.toast-hiding { animation: toastSlideOutRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+    </style>
+</head>
+<body class="h-full flex flex-col justify-between bg-slate-950 text-slate-100 antialiased selection:bg-brand-500 selection:text-white relative overflow-x-hidden">
+
+    <!-- Ambient Glowing Background Elements -->
+    <div class="fixed inset-0 pointer-events-none admin-glow-bg z-0"></div>
+    <div class="fixed top-1/4 -left-48 w-96 h-96 bg-brand-600/10 rounded-full blur-3xl pointer-events-none"></div>
+    <div class="fixed bottom-1/4 -right-48 w-96 h-96 bg-accent-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+    <!-- Flash Messages (Top Right Toast) -->
+    <div id="toastContainer" class="fixed top-6 right-6 z-50 flex flex-col gap-3 max-w-sm w-full px-4 sm:px-0 pointer-events-none">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                    {% set is_danger = (category == 'error' or category == 'danger') %}
+                    <div class="toast-item pointer-events-auto bg-slate-900/95 backdrop-blur-md rounded-2xl shadow-2xl border p-4 flex items-start gap-3.5 {% if is_danger %}border-rose-500/40 text-rose-200{% else %}border-emerald-500/40 text-emerald-200{% endif %}">
+                        <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0 {% if is_danger %}bg-rose-500/20 text-rose-400{% else %}bg-emerald-500/20 text-emerald-400{% endif %}">
+                            <i class="fa-solid {% if is_danger %}fa-triangle-exclamation{% else %}fa-circle-check{% endif %} text-base"></i>
+                        </div>
+                        <div class="flex-1 pt-0.5 min-w-0">
+                            <h5 class="text-xs font-bold uppercase tracking-wider {% if is_danger %}text-rose-400{% else %}text-emerald-400{% endif %}">
+                                {% if is_danger %}Xatolik{% else %}Muvaffaqiyatli{% endif %}
+                            </h5>
+                            <p class="text-xs text-slate-300 mt-0.5 leading-snug">{{ message }}</p>
+                        </div>
+                        <button type="button" onclick="dismissToast(this)" class="text-slate-400 hover:text-white p-1">
+                            <i class="fa-solid fa-xmark text-xs"></i>
+                        </button>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+    </div>
+
+    <!-- Top Simple Bar -->
+    <header class="relative z-10 px-6 py-5 flex justify-between items-center max-w-7xl mx-auto w-full">
+        <a href="/" class="flex items-center gap-3 group">
+            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 to-accent-500 flex items-center justify-center text-white text-lg font-bold shadow-glow group-hover:scale-105 transition">
+                <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <div class="flex flex-col">
+                <span class="text-lg font-extrabold tracking-tight text-white leading-none">
+                    Market<span class="text-brand-500">.uz</span>
+                </span>
+                <span class="text-[10px] font-semibold text-slate-400 tracking-wider uppercase mt-1">Admin Panel</span>
+            </div>
+        </a>
+
+        <a href="/" class="text-xs font-semibold text-slate-400 hover:text-white bg-slate-900/80 hover:bg-slate-800 border border-slate-800 px-3.5 py-2 rounded-xl transition flex items-center gap-1.5">
+            <i class="fa-solid fa-arrow-left text-[11px]"></i>
+            <span>Asosiy saytga qaytish</span>
+        </a>
+    </header>
+
+    <!-- Main Login Card Area -->
+    <main class="relative z-10 flex-1 flex items-center justify-center px-4 sm:px-6 lg:px-8 py-10">
+        <div class="max-w-md w-full">
+            
+            <!-- Card Container -->
+            <div class="bg-slate-900/80 backdrop-blur-xl border border-slate-800/80 rounded-3xl p-8 sm:p-10 shadow-2xl shadow-black/60 relative overflow-hidden">
+                
+                <!-- Glowing Top Border -->
+                <div class="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-brand-600 via-accent-500 to-brand-600"></div>
+
+                <!-- Header Title -->
+                <div class="text-center mb-8">
+                    <div class="w-14 h-14 mx-auto rounded-2xl bg-gradient-to-br from-brand-600/20 to-accent-600/20 border border-brand-500/30 text-brand-400 flex items-center justify-center text-2xl mb-4 shadow-glow">
+                        <i class="fa-solid fa-lock"></i>
+                    </div>
+                    <span class="text-[11px] font-bold uppercase tracking-widest text-brand-400 bg-brand-500/10 border border-brand-500/20 px-3 py-1 rounded-full inline-block mb-2">
+                        Xavfsiz Hudud
+                    </span>
+                    <h1 class="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
+                        Admin Tizimiga Kirish
+                    </h1>
+                    <p class="text-slate-400 text-xs mt-2">
+                        Boshqaruv paneliga kirish uchun admin ma'lumotlaringizni kiriting
+                    </p>
+                </div>
+
+                <!-- Form -->
+                <form method="POST" action="{{ url_for('admin.admin_page') }}" class="space-y-5" novalidate>
+                    {{ form.hidden_tag() if form and form.hidden_tag is defined else '' }}
+
+                    <!-- Username Field -->
+                    <div>
+                        <label for="username" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider mb-2">
+                            Admin Username <span class="text-rose-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                <i class="fa-solid fa-user-shield text-sm"></i>
+                            </div>
+                            {% if form and form.username is defined %}
+                                {{ form.username(
+                                    id="username",
+                                    placeholder="admin_username",
+                                    autocomplete="username",
+                                    class="w-full bg-slate-950/70 text-white placeholder-slate-500 pl-10 pr-3.5 py-3 rounded-xl text-sm border border-slate-800 focus:border-brand-500 focus:bg-slate-950 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition duration-200"
+                                ) }}
+                            {% else %}
+                                <input 
+                                    type="text" 
+                                    name="username" 
+                                    id="username" 
+                                    placeholder="admin_username" 
+                                    required 
+                                    class="w-full bg-slate-950/70 text-white placeholder-slate-500 pl-10 pr-3.5 py-3 rounded-xl text-sm border border-slate-800 focus:border-brand-500 focus:bg-slate-950 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition duration-200"
+                                >
+                            {% endif %}
+                        </div>
+                        {% if form and form.username.errors %}
+                            <ul class="mt-1.5 space-y-0.5">
+                                {% for error in form.username.errors %}
+                                    <li class="text-xs text-rose-400 flex items-center gap-1">
+                                        <i class="fa-solid fa-circle-exclamation text-[10px]"></i> {{ error }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+
+                    <!-- Password Field -->
+                    <div>
+                        <div class="flex items-center justify-between mb-2">
+                            <label for="password" class="block text-xs font-semibold text-slate-300 uppercase tracking-wider">
+                                Maxfiy Parol <span class="text-rose-500">*</span>
+                            </label>
+                        </div>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                <i class="fa-solid fa-key text-sm"></i>
+                            </div>
+                            {% if form and form.password is defined %}
+                                {{ form.password(
+                                    id="password",
+                                    placeholder="••••••••",
+                                    autocomplete="current-password",
+                                    class="w-full bg-slate-950/70 text-white placeholder-slate-500 pl-10 pr-10 py-3 rounded-xl text-sm border border-slate-800 focus:border-brand-500 focus:bg-slate-950 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition duration-200"
+                                ) }}
+                            {% else %}
+                                <input 
+                                    type="password" 
+                                    name="password" 
+                                    id="password" 
+                                    placeholder="••••••••" 
+                                    required 
+                                    class="w-full bg-slate-950/70 text-white placeholder-slate-500 pl-10 pr-10 py-3 rounded-xl text-sm border border-slate-800 focus:border-brand-500 focus:bg-slate-950 focus:outline-none focus:ring-2 focus:ring-brand-500/20 transition duration-200"
+                                >
+                            {% endif %}
+                            <button type="button" onclick="togglePasswordVisibility('password', this)" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-white focus:outline-none">
+                                <i class="fa-regular fa-eye text-sm"></i>
+                            </button>
+                        </div>
+                        {% if form and form.password.errors %}
+                            <ul class="mt-1.5 space-y-0.5">
+                                {% for error in form.password.errors %}
+                                    <li class="text-xs text-rose-400 flex items-center gap-1">
+                                        <i class="fa-solid fa-circle-exclamation text-[10px]"></i> {{ error }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+
+                    <!-- Submit Button -->
+                    <div class="pt-2">
+                        <button type="submit" class="w-full bg-gradient-to-r from-brand-600 to-accent-600 hover:from-brand-500 hover:to-accent-500 text-white font-bold py-3.5 px-4 rounded-xl shadow-glow hover:shadow-glow-accent transform active:scale-[0.99] transition duration-200 flex items-center justify-center gap-2 text-sm">
+                            <i class="fa-solid fa-right-to-bracket"></i>
+                            <span>Admin Panelga Kirish</span>
+                        </button>
+                    </div>
+                </form>
+
+                <!-- Security Footer -->
+                <div class="mt-8 pt-6 border-t border-slate-800/80 text-center">
+                    <div class="inline-flex items-center gap-2 text-[11px] text-slate-500">
+                        <i class="fa-solid fa-shield-check text-emerald-500"></i>
+                        <span>256-bit Shifrlangan va Himoyalangan Admin Seansi</span>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+    </main>
+
+    <!-- Bottom Copyright -->
+    <footer class="relative z-10 py-6 text-center text-xs text-slate-600">
+        &copy; 2026 Market.uz Admin Boshqaruv Tizimi. Barcha huquqlar himoyalangan.
+    </footer>
+
+    <script>
+        function togglePasswordVisibility(fieldId, buttonElement) {
+            const input = document.getElementById(fieldId);
+            const icon = buttonElement.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye', 'fa-regular');
+                icon.classList.add('fa-eye-slash', 'fa-solid', 'text-brand-400');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash', 'fa-solid', 'text-brand-400');
+                icon.classList.add('fa-eye', 'fa-regular');
+            }
+        }
+
+        function dismissToast(btnOrEl) {
+            const toast = btnOrEl.closest ? btnOrEl.closest('.toast-item') : btnOrEl;
+            if (toast) {
+                toast.classList.add('toast-hiding');
+                setTimeout(() => {
+                    if (toast && toast.parentNode) toast.parentNode.removeChild(toast);
+                }, 400);
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const toasts = document.querySelectorAll('.toast-item');
+            toasts.forEach((toast) => {
+                setTimeout(() => dismissToast(toast), 4000);
+            });
+        });
+    </script>
+</body>
+</html>

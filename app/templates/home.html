@@ -127,15 +127,26 @@
         <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
             
             {% if categories is defined and categories %}
+                {% set color_schemes = [
+                    {'icon_bg': 'bg-indigo-100 text-indigo-600', 'icon': 'fa-laptop'},
+                    {'icon_bg': 'bg-emerald-100 text-emerald-600', 'icon': 'fa-shirt'},
+                    {'icon_bg': 'bg-amber-100 text-amber-600', 'icon': 'fa-car'},
+                    {'icon_bg': 'bg-cyan-100 text-cyan-600', 'icon': 'fa-house'},
+                    {'icon_bg': 'bg-rose-100 text-rose-600', 'icon': 'fa-couch'},
+                    {'icon_bg': 'bg-purple-100 text-purple-600', 'icon': 'fa-briefcase'},
+                    {'icon_bg': 'bg-sky-100 text-sky-600', 'icon': 'fa-mobile-screen'},
+                    {'icon_bg': 'bg-teal-100 text-teal-600', 'icon': 'fa-gamepad'}
+                ] %}
                 {% for cat in categories %}
-                <a href="/?category_id={{ cat.id }}" class="group p-4 bg-white hover:bg-brand-50/60 rounded-2xl border {% if request.args.get('category_id')|string == cat.id|string %}border-brand-500 bg-brand-50/80 ring-2 ring-brand-500/20{% else %}border-slate-200/80 hover:border-brand-300{% endif %} transition duration-200 shadow-soft flex flex-col items-center text-center gap-3">
-                    <div class="w-12 h-12 rounded-xl bg-brand-100 text-brand-600 group-hover:scale-110 transition duration-300 flex items-center justify-center text-xl">
-                        <i class="fa-solid fa-shapes"></i>
-                    </div>
-                    <span class="text-sm font-bold text-slate-800 group-hover:text-brand-600 line-clamp-1">
-                        {{ cat.name }}
-                    </span>
-                </a>
+                    {% set scheme = color_schemes[loop.index0 % (color_schemes|length)] %}
+                    <a href="/?category_id={{ cat.id }}" class="group p-4 bg-white hover:bg-brand-50/60 rounded-2xl border {% if request.args.get('category_id')|string == cat.id|string %}border-brand-500 bg-brand-50/80 ring-2 ring-brand-500/20 shadow-md{% else %}border-slate-200/80 hover:border-brand-300{% endif %} transition duration-200 shadow-soft flex flex-col items-center text-center gap-3">
+                        <div class="w-12 h-12 rounded-xl {{ scheme.icon_bg }} group-hover:scale-110 transition duration-300 flex items-center justify-center text-xl shadow-inner">
+                            <i class="fa-solid {{ scheme.icon }}"></i>
+                        </div>
+                        <span class="text-sm font-bold text-slate-800 group-hover:text-brand-600 line-clamp-1">
+                            {{ cat.name }}
+                        </span>
+                    </a>
                 {% endfor %}
             {% else %}
                 <!-- Modern Default Category Showcase (Fallback) -->

@@ -1,0 +1,194 @@
+{% extends "base.html" %}
+
+{% block title %}Kategoriyalar — Market.uz{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+    <!-- Breadcrumb -->
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <nav class="flex items-center text-xs text-slate-500 space-x-2">
+            <a href="/" class="hover:text-brand-600 transition flex items-center gap-1">
+                <i class="fa-solid fa-house"></i> Bosh sahifa
+            </a>
+            <span>/</span>
+            {% if current_user.is_authenticated and current_user.is_admin %}
+                <a href="/admin/dashboard" class="hover:text-brand-600 transition">Admin Panel</a>
+                <span>/</span>
+            {% endif %}
+            <span class="text-slate-800 font-semibold">Kategoriyalar</span>
+        </nav>
+
+        {% if current_user.is_authenticated and current_user.is_admin %}
+            <a href="/category/create" class="inline-flex items-center gap-2 bg-gradient-to-r from-brand-600 to-accent-600 hover:from-brand-700 hover:to-accent-700 text-white text-xs sm:text-sm font-bold px-4 py-2.5 rounded-xl shadow-md shadow-brand-500/20 hover:shadow-glow transition duration-200">
+                <i class="fa-solid fa-plus-circle"></i>
+                <span>Yangi kategoriya qo'shish</span>
+            </a>
+        {% endif %}
+    </div>
+
+    <!-- Header Banner -->
+    <div class="bg-gradient-to-r from-brand-700 via-brand-600 to-accent-600 rounded-3xl p-6 sm:p-8 text-white relative overflow-hidden shadow-lg">
+        <div class="absolute -top-12 -right-12 w-48 h-48 bg-white/10 rounded-full blur-xl"></div>
+        <div class="relative z-10 max-w-2xl">
+            <span class="text-[11px] font-bold uppercase tracking-wider bg-white/20 px-3 py-1 rounded-full inline-block mb-2 backdrop-blur-sm">
+                Katalog & Bo'limlar
+            </span>
+            <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight">
+                Mahsulot Kategoriyalari
+            </h1>
+            <p class="text-brand-100 text-xs sm:text-sm mt-2">
+                Platformadagi barcha mavjud bo'limlar ro'yxati. Istalgan kategoriya bo'yicha e'lonlarni ko'rishingiz yoki boshqarishingiz mumkin.
+            </p>
+        </div>
+    </div>
+
+    <!-- Live Search & Stats Filter Bar -->
+    <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-soft flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+            <span class="text-xs font-bold text-slate-700 uppercase tracking-wider">Jami kategoriyalar:</span>
+            <span class="bg-brand-50 text-brand-600 text-xs font-extrabold px-3 py-1 rounded-full border border-brand-100">
+                {{ categories|length if categories is defined else 0 }} ta
+            </span>
+        </div>
+
+        <div class="relative w-full sm:w-72">
+            <input 
+                type="text" 
+                id="categorySearch" 
+                onkeyup="filterCategories()" 
+                placeholder="Kategoriyani qidirish..."
+                class="w-full bg-slate-50 text-slate-800 placeholder-slate-400 pl-9 pr-4 py-2 rounded-xl text-xs border border-slate-200 focus:border-brand-500 focus:bg-white focus:outline-none transition"
+            >
+            <div class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs">
+                <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+        </div>
+    </div>
+
+    <!-- Category Cards / Table Grid -->
+    {% if categories is defined and categories %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6" id="categoriesGrid">
+            {% for cat in categories %}
+                <div class="category-card bg-white rounded-3xl border border-slate-100 shadow-soft hover:shadow-card-hover p-6 transition duration-300 flex flex-col justify-between group">
+                    <div>
+                        <!-- Category Header Icon & Count -->
+                        <div class="flex items-center justify-between mb-4">
+                            <div class="w-12 h-12 rounded-2xl bg-brand-50 text-brand-600 group-hover:bg-brand-600 group-hover:text-white transition duration-300 flex items-center justify-center text-xl shadow-inner">
+                                <i class="fa-solid fa-layer-group"></i>
+                            </div>
+                            <span class="text-xs font-bold px-2.5 py-1 bg-slate-100 text-slate-600 rounded-full flex items-center gap-1">
+                                <i class="fa-solid fa-boxes-stacked text-[10px] text-slate-400"></i>
+                                <span>{{ cat.products|length if cat.products is defined and cat.products is iterable else (1 if cat.products is defined and cat.products else 0) }} e'lon</span>
+                            </span>
+                        </div>
+
+                        <!-- Title & Slug -->
+                        <h3 class="category-name text-lg font-bold text-slate-900 group-hover:text-brand-600 transition">
+                            {{ cat.name }}
+                        </h3>
+                        <p class="text-xs text-slate-400 mt-1 font-mono">
+                            slug: /{{ cat.slug }}
+                        </p>
+                    </div>
+
+                    <!-- Action Bar -->
+                    <div class="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between gap-2">
+                        <a href="/?category_id={{ cat.id }}" class="text-xs font-bold text-brand-600 hover:text-brand-700 flex items-center gap-1.5 transition">
+                            <span>E'lonlarni ko'rish</span>
+                            <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition"></i>
+                        </a>
+
+                        {% if current_user.is_authenticated and current_user.is_admin %}
+                            <div class="flex items-center gap-1.5">
+                                <a href="/category/{{ cat.id }}/edit" class="p-2 text-slate-500 hover:text-brand-600 hover:bg-brand-50 rounded-xl transition" title="Tahrirlash">
+                                    <i class="fa-solid fa-pen-to-square text-xs"></i>
+                                </a>
+                                <button onclick="confirmDelete('{{ cat.id }}', '{{ cat.name }}')" class="p-2 text-rose-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition" title="O'chirish">
+                                    <i class="fa-solid fa-trash-can text-xs"></i>
+                                </button>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <!-- Empty State -->
+        <div class="bg-white rounded-3xl border border-slate-100 shadow-soft p-12 text-center space-y-4">
+            <div class="w-16 h-16 rounded-full bg-brand-50 text-brand-500 flex items-center justify-center mx-auto text-2xl">
+                <i class="fa-solid fa-folder-open"></i>
+            </div>
+            <div class="space-y-1">
+                <h3 class="text-lg font-bold text-slate-800">Kategoriyalar mavjud emas</h3>
+                <p class="text-xs text-slate-400 max-w-sm mx-auto">
+                    Hozircha hech qanday kategoriya qo'shilmagan.
+                </p>
+            </div>
+            {% if current_user.is_authenticated and current_user.is_admin %}
+                <a href="/category/create" class="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold px-5 py-2.5 rounded-xl shadow-sm hover:shadow transition">
+                    <i class="fa-solid fa-plus-circle"></i>
+                    <span>Birinchi kategoriyani qo'shish</span>
+                </a>
+            {% endif %}
+        </div>
+    {% endif %}
+
+</div>
+
+<!-- Delete Confirmation Modal (Admin only) -->
+{% if current_user.is_authenticated and current_user.is_admin %}
+<div id="deleteModal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center px-4">
+    <div class="bg-white rounded-3xl max-w-md w-full p-6 sm:p-8 shadow-2xl space-y-6 animate-fadeIn">
+        <div class="w-12 h-12 rounded-2xl bg-rose-50 text-rose-500 flex items-center justify-center text-xl mx-auto shadow-inner">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+        </div>
+        <div class="text-center space-y-2">
+            <h3 class="text-lg font-bold text-slate-900">Kategoriyani o'chirish</h3>
+            <p class="text-xs text-slate-500">
+                Haqiqatan ham <strong id="deleteCategoryName" class="text-slate-800"></strong> kategoriyasini o'chirmoqchimisiz?
+            </p>
+        </div>
+        <div class="flex items-center justify-center gap-3 pt-2">
+            <button onclick="closeDeleteModal()" class="px-4 py-2.5 rounded-xl text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition">
+                Bekor qilish
+            </button>
+            <form id="deleteForm" method="POST" action="">
+                <button type="submit" class="px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-rose-600 hover:bg-rose-700 shadow-sm transition">
+                    Ha, o'chirilsin
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    function filterCategories() {
+        const query = document.getElementById('categorySearch').value.toLowerCase();
+        const cards = document.querySelectorAll('.category-card');
+        cards.forEach(card => {
+            const name = card.querySelector('.category-name').innerText.toLowerCase();
+            card.style.display = name.includes(query) ? '' : 'none';
+        });
+    }
+
+    function confirmDelete(id, name) {
+        const modal = document.getElementById('deleteModal');
+        const form = document.getElementById('deleteForm');
+        const nameEl = document.getElementById('deleteCategoryName');
+        if (modal && form && nameEl) {
+            nameEl.innerText = name;
+            form.action = `/category/${id}/delete`;
+            modal.classList.remove('hidden');
+        }
+    }
+
+    function closeDeleteModal() {
+        const modal = document.getElementById('deleteModal');
+        if (modal) modal.classList.add('hidden');
+    }
+</script>
+{% endblock %}

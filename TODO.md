@@ -10,10 +10,6 @@ Flask asosida onlayn market (marketplace) platformasi. Foydalanuvchilar mahsulot
 ---
 
 ### Bosqich 3: Autentifikatsiya (auth)
-- [ ] Ro'yxatdan o'tish (register) formasi va route
-- [ ] Login/logout (Flask-Login orqali)
-- [ ] Parolni hash qilish (`werkzeug.security`)
-- [ ] `login_required` decorator bilan himoyalangan sahifalar
 - [ ] Admin uchun alohida `admin_required` decorator (`current_user.is_admin` tekshiruvi)
 
 ### Bosqich 4: User funksiyalari
@@ -35,10 +31,6 @@ Flask asosida onlayn market (marketplace) platformasi. Foydalanuvchilar mahsulot
 - [ ] Mahsulotni o'chirish/tasdiqlash imkoniyati
 - [ ] Foydalanuvchini bloklash/faolsizlantirish (`is_active`)
 
-### Bosqich 7: Frontend (template)
-- [ ] `base.html` — umumiy layout (navbar, footer)
-- [ ] Bootstrap yoki Tailwind ulash
-- [ ] Har bir sahifa uchun template: home, product_detail, add_product, admin_dashboard, login, register
 
 ### Bosqich 8: Savatcha (Cart)
 - [ ] `Cart` va `CartItem` modellarini yaratish, migratsiya qilish
@@ -53,10 +45,6 @@ Flask asosida onlayn market (marketplace) platformasi. Foydalanuvchilar mahsulot
 - [ ] Fayl yuklashda (rasm) ruxsat etilgan formatlarni tekshirish
 - [ ] Xatoliklarni qayta ishlash (404, 403, 500 sahifalari)
 
-### Bosqich 10: Test va joylashtirish (deploy)
-- [ ] Asosiy funksiyalarni qo'lda test qilish (register → login → mahsulot qo'shish → admin ko'rish)
-- [ ] `requirements.txt` yaratish
-- [ ] Deploy qilish (Render, PythonAnywhere yoki VPS)
 
 ---
 

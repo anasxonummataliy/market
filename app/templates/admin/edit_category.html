@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Kategoriyani Tahrirlash — Market.uz{% endblock %}
+
+{% block content %}
+<div class="max-w-xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+
+    <!-- Breadcrumb -->
+    <nav class="flex items-center text-xs text-slate-500 space-x-2 mb-6">
+        <a href="/" class="hover:text-brand-600 transition flex items-center gap-1">
+            <i class="fa-solid fa-house"></i> Bosh sahifa
+        </a>
+        <span>/</span>
+        <a href="/categories" class="hover:text-brand-600 transition">Kategoriyalar</a>
+        <span>/</span>
+        <span class="text-slate-800 font-semibold">Tahrirlash</span>
+    </nav>
+
+    <!-- Card Form -->
+    <div class="bg-white rounded-3xl border border-slate-100 shadow-soft p-6 sm:p-10 relative overflow-hidden">
+        <!-- Top Gradient Strip -->
+        <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-brand-600 to-accent-500"></div>
+
+        <div class="mb-8">
+            <div class="w-12 h-12 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center text-xl mb-4 shadow-inner">
+                <i class="fa-solid fa-pen-to-square"></i>
+            </div>
+            <h1 class="text-2xl font-extrabold text-slate-900 tracking-tight">
+                Kategoriyani Tahrirlash
+            </h1>
+            <p class="text-slate-500 text-xs mt-1">
+                Kategoriya nomini o'zgartiring va saqlang
+            </p>
+        </div>
+
+        <form method="POST" action="" class="space-y-6" novalidate>
+            {{ form.hidden_tag() if form and form.hidden_tag is defined else '' }}
+
+            <!-- Category Name Field -->
+            <div>
+                <label for="name" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-2">
+                    Kategoriya Nomi <span class="text-rose-500">*</span>
+                </label>
+                <div class="relative">
+                    <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                        <i class="fa-solid fa-tag text-sm"></i>
+                    </div>
+                    {% if form and form.name is defined %}
+                        {{ form.name(
+                            id="name",
+                            placeholder="Kategoriya nomi",
+                            class="w-full bg-slate-50 text-slate-800 placeholder-slate-400 pl-10 pr-3.5 py-3 rounded-xl text-sm border " ~ ("border-rose-300 bg-rose-50/30 focus:border-rose-500 focus:ring-rose-500/20" if form.name.errors else "border-slate-200 focus:border-brand-500 focus:bg-white focus:ring-brand-500/10") ~ " focus:outline-none focus:ring-4 transition duration-200"
+                        ) }}
+                    {% else %}
+                        <input 
+                            type="text" 
+                            name="name" 
+                            id="name" 
+                            placeholder="Kategoriya nomi" 
+                            required
+                            class="w-full bg-slate-50 text-slate-800 placeholder-slate-400 pl-10 pr-3.5 py-3 rounded-xl text-sm border border-slate-200 focus:border-brand-500 focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-500/10 transition duration-200"
+                        >
+                    {% endif %}
+                </div>
+                {% if form and form.name.errors %}
+                    <ul class="mt-1.5 space-y-0.5">
+                        {% for error in form.name.errors %}
+                            <li class="text-xs text-rose-500 flex items-center gap-1">
+                                <i class="fa-solid fa-circle-exclamation text-[10px]"></i> {{ error }}
+                            </li>
+                        {% endfor %}
+                    </ul>
+                {% endif %}
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="flex items-center justify-end gap-3 pt-4 border-t border-slate-100">
+                <a href="/categories" class="px-5 py-2.5 rounded-xl text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 transition">
+                    Bekor qilish
+                </a>
+                <button type="submit" class="bg-gradient-to-r from-brand-600 to-accent-600 hover:from-brand-700 hover:to-accent-700 text-white font-bold py-2.5 px-6 rounded-xl text-xs shadow-md shadow-brand-500/20 hover:shadow-glow transition duration-200 flex items-center gap-2">
+                    <i class="fa-solid fa-check"></i>
+                    <span>O'zgarishlarni saqlash</span>
+                </button>
+            </div>
+        </form>
+    </div>
+
+</div>
+{% endblock %}
