@@ -55,6 +55,31 @@ class Product(db.Model):
 - Category → Product: one-to-many (bitta kategoriyada ko'p mahsulot bo'ladi)
 - Har bir Product albatta bitta `user_id` va bitta `category_id` ga bog'langan
 
+### Cart
+```python
+class Cart(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), unique=True, nullable=False)
+
+    items = db.relationship('CartItem', backref='cart', lazy=True, cascade='all, delete-orphan')
+```
+
+### CartItem
+```python
+class CartItem(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    cart_id = db.Column(db.Integer, db.ForeignKey('cart.id'), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey('product.id'), nullable=False)
+    quantity = db.Column(db.Integer, default=1, nullable=False)
+
+    product = db.relationship('Product')
+```
+
+**Cart munosabatlari:**
+- User → Cart: one-to-one (har bir userda bitta cart bo'ladi)
+- Cart → CartItem: one-to-many (cartda bir nechta mahsulot turi bo'lishi mumkin)
+- CartItem → Product: many-to-one (qaysi mahsulot va nechta dona)
+
 ---
 
 ## 2. TODO — Bosqichma-bosqich
@@ -102,12 +127,20 @@ class Product(db.Model):
 - [ ] Bootstrap yoki Tailwind ulash
 - [ ] Har bir sahifa uchun template: home, product_detail, add_product, admin_dashboard, login, register
 
-### Bosqich 8: Xavfsizlik va tozalash
+### Bosqich 8: Savatcha (Cart)
+- [ ] `Cart` va `CartItem` modellarini yaratish, migratsiya qilish
+- [ ] User ro'yxatdan o'tganda avtomatik bo'sh cart yaratish (yoki birinchi "add to cart"da)
+- [ ] "Add to cart" route (mahsulot detail sahifasidan)
+- [ ] Cart sahifasi — mahsulotlar, miqdori, umumiy narx
+- [ ] Miqdorni o'zgartirish / mahsulotni cartdan o'chirish
+- [ ] Navbar'da cart icon + ichidagi mahsulotlar soni
+
+### Bosqich 9: Xavfsizlik va tozalash
 - [ ] Formalarni `Flask-WTF` + CSRF himoyasi bilan yozish
 - [ ] Fayl yuklashda (rasm) ruxsat etilgan formatlarni tekshirish
 - [ ] Xatoliklarni qayta ishlash (404, 403, 500 sahifalari)
 
-### Bosqich 9: Test va joylashtirish (deploy)
+### Bosqich 10: Test va joylashtirish (deploy)
 - [ ] Asosiy funksiyalarni qo'lda test qilish (register → login → mahsulot qo'shish → admin ko'rish)
 - [ ] `requirements.txt` yaratish
 - [ ] Deploy qilish (Render, PythonAnywhere yoki VPS)
@@ -115,4 +148,4 @@ class Product(db.Model):
 ---
 
 ## Keyingi qadam
-Birinchi navbatda **Bosqich 1 va 2** ni bajarish tavsiya etiladi — loyiha skeletoni va modellarsiz keyingi qadamlarni qilib bo'lmaydi.
+Birinchi navbatda **Bosqich 1 va 2** ni bajarish tavsiya etiladi — loyiha skeletoni va modellarsiz keyingi qadamlarni qilib bo'lmaydi. Cart (Bosqich 8) qasddan Order/checkout'dan oldin va asosiy market funksiyalaridan keyin qo'yilgan — shu tartibda borilsa loyiha bosqichma-bosqich, murakkablashib ketmasdan o'sadi.

@@ -8,3 +8,7 @@ migrate = Migrate()
 bcrypt = Bcrypt()
 login_manager = LoginManager()
 
+from .user import User
+from .cart import CartItem, Cart
+from .product import Product
+from .category import Category
