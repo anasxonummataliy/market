@@ -1,0 +1,260 @@
+{% extends "base.html" %}
+
+{% block title %}Mening profilim — Market.uz{% endblock %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+
+    <!-- Breadcrumb -->
+    <nav class="flex items-center text-xs text-slate-500 space-x-2">
+        <a href="/" class="hover:text-brand-600 transition flex items-center gap-1">
+            <i class="fa-solid fa-house"></i> Bosh sahifa
+        </a>
+        <span>/</span>
+        <span class="text-slate-800 font-medium">Mening profilim</span>
+    </nav>
+
+    <!-- Profile Header Card -->
+    <div class="bg-white rounded-3xl border border-slate-100 shadow-soft overflow-hidden">
+        <!-- Banner Gradient Background -->
+        <div class="h-36 sm:h-48 bg-gradient-to-r from-brand-700 via-brand-600 to-accent-600 relative overflow-hidden">
+            <div class="absolute inset-0 bg-black/10"></div>
+            <!-- Decorative blur shapes -->
+            <div class="absolute -top-12 -right-12 w-48 h-48 bg-white/10 rounded-full blur-xl"></div>
+            <div class="absolute bottom-0 left-12 w-36 h-36 bg-accent-400/20 rounded-full blur-lg"></div>
+        </div>
+
+        <!-- Profile Bar -->
+        <div class="px-6 sm:px-10 pb-8 pt-0">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                
+                <!-- Left: Avatar + Details -->
+                <div class="flex flex-col sm:flex-row items-center sm:items-center gap-5 text-center sm:text-left">
+                    <!-- Big Avatar with negative margin popping over banner -->
+                    <div class="relative -mt-14 sm:-mt-16 flex-shrink-0">
+                        <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-3xl bg-white p-1.5 shadow-xl">
+                            <div class="w-full h-full rounded-2xl bg-gradient-to-tr from-brand-600 to-accent-500 text-white flex items-center justify-center font-extrabold text-3xl sm:text-4xl shadow-inner">
+                                {% if current_user.first_name %}
+                                    {{ current_user.first_name[0]|upper }}
+                                {% elif current_user.username %}
+                                    {{ current_user.username[0]|upper }}
+                                {% else %}
+                                    <i class="fa-solid fa-user"></i>
+                                {% endif %}
+                            </div>
+                        </div>
+                        <span class="absolute bottom-1.5 right-1.5 w-4 h-4 bg-emerald-500 border-2 border-white rounded-full" title="Faol"></span>
+                    </div>
+
+                    <!-- Names, Username, Badge, Date -->
+                    <div class="space-y-1.5 pt-2 sm:pt-4">
+                        <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2.5">
+                            <h1 class="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
+                                {{ current_user.first_name }} {{ current_user.last_name }}
+                            </h1>
+                            {% if current_user.is_admin %}
+                                <span class="px-2.5 py-0.5 bg-amber-100 text-amber-800 text-xs font-bold rounded-full flex items-center gap-1 border border-amber-200">
+                                    <i class="fa-solid fa-shield-halved text-amber-600"></i> Admin
+                                </span>
+                            {% else %}
+                                <span class="px-2.5 py-0.5 bg-brand-50 text-brand-700 text-xs font-semibold rounded-full border border-brand-100">
+                                    <i class="fa-solid fa-user-check mr-1"></i> Foydalanuvchi
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <div class="flex flex-wrap items-center justify-center sm:justify-start gap-3 text-xs">
+                            <span class="font-semibold text-brand-600">@{{ current_user.username }}</span>
+                            <span class="text-slate-300">•</span>
+                            <span class="text-slate-500 flex items-center gap-1">
+                                <i class="fa-regular fa-calendar text-slate-400"></i>
+                                A'zo bo'lgan: {{ current_user.created_at.strftime('%d.%m.%Y') if current_user.created_at else 'Yaqinda' }}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right: Action Buttons -->
+                <div class="flex items-center justify-center md:justify-end gap-3 pt-2 md:pt-4 flex-shrink-0">
+                    <a href="/products/add" class="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white px-4 sm:px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold shadow-md shadow-brand-500/20 hover:shadow-glow transition duration-200">
+                        <i class="fa-solid fa-plus-circle"></i>
+                        <span>E'lon berish</span>
+                    </a>
+                    <a href="/auth/logout" class="inline-flex items-center gap-2 bg-rose-50 hover:bg-rose-100 text-rose-600 px-3.5 sm:px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold border border-rose-200 transition duration-200">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                        <span>Chiqish</span>
+                    </a>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats Grid -->
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
+        <!-- Stat 1: E'lonlar -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-soft flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center text-xl flex-shrink-0">
+                <i class="fa-solid fa-rectangle-list"></i>
+            </div>
+            <div>
+                <p class="text-xs text-slate-400 font-medium">Mening e'lonlarim</p>
+                <p class="text-2xl font-black text-slate-900 mt-0.5">
+                    {{ current_user.products|length if current_user.products is defined else 0 }}
+                </p>
+            </div>
+        </div>
+
+        <!-- Stat 2: Savatcha -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-soft flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-cyan-50 text-accent-600 flex items-center justify-center text-xl flex-shrink-0">
+                <i class="fa-solid fa-cart-shopping"></i>
+            </div>
+            <div>
+                <p class="text-xs text-slate-400 font-medium">Savatchamda</p>
+                <p class="text-2xl font-black text-slate-900 mt-0.5">
+                    {{ cart_count|default(0) }}
+                </p>
+            </div>
+        </div>
+
+        <!-- Stat 3: Hisob holati -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-soft flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl flex-shrink-0">
+                <i class="fa-solid fa-badge-check"></i>
+            </div>
+            <div>
+                <p class="text-xs text-slate-400 font-medium">Hisob holati</p>
+                <p class="text-sm font-bold text-emerald-600 mt-1 flex items-center gap-1">
+                    <i class="fa-solid fa-check text-xs"></i> Faol & Tasdiqlangan
+                </p>
+            </div>
+        </div>
+
+        <!-- Stat 4: ID raqam -->
+        <div class="bg-white p-5 rounded-2xl border border-slate-100 shadow-soft flex items-center gap-4">
+            <div class="w-12 h-12 rounded-2xl bg-slate-100 text-slate-700 flex items-center justify-center text-xl flex-shrink-0">
+                <i class="fa-solid fa-id-card"></i>
+            </div>
+            <div>
+                <p class="text-xs text-slate-400 font-medium">Foydalanuvchi ID</p>
+                <p class="text-lg font-black text-slate-900 mt-0.5">
+                    #{{ current_user.id }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Details and Activity Section -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        
+        <!-- Left: Account Details -->
+        <div class="lg:col-span-4 bg-white rounded-3xl border border-slate-100 shadow-soft p-6 sm:p-8 space-y-6">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+                    <i class="fa-solid fa-circle-user text-brand-600"></i>
+                    <span>Shaxsiy ma'lumotlar</span>
+                </h3>
+            </div>
+
+            <div class="space-y-4 text-sm">
+                <div>
+                    <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider block">Ism</label>
+                    <p class="font-bold text-slate-800 mt-0.5">{{ current_user.first_name or '-' }}</p>
+                </div>
+
+                <div>
+                    <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider block">Familiya</label>
+                    <p class="font-bold text-slate-800 mt-0.5">{{ current_user.last_name or '-' }}</p>
+                </div>
+
+                <div>
+                    <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider block">Username</label>
+                    <p class="font-bold text-slate-800 mt-0.5 flex items-center gap-1">
+                        <span class="text-brand-600 font-semibold">@{{ current_user.username }}</span>
+                    </p>
+                </div>
+
+                <div>
+                    <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider block">Ro'yxatdan o'tgan vaqt</label>
+                    <p class="font-medium text-slate-700 mt-0.5">
+                        {{ current_user.created_at.strftime('%Y-%m-%d %H:%M') if current_user.created_at else '-' }}
+                    </p>
+                </div>
+
+                <div>
+                    <label class="text-xs font-semibold text-slate-400 uppercase tracking-wider block">Hisob turi</label>
+                    <p class="font-semibold text-slate-800 mt-0.5">
+                        {% if current_user.is_admin %}
+                            <span class="text-amber-600 font-bold">Tizim administratori</span>
+                        {% else %}
+                            <span>Oddiy xaridor / sotuvchi</span>
+                        {% endif %}
+                    </p>
+                </div>
+            </div>
+
+            <div class="pt-4 border-t border-slate-100">
+                <a href="/" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 py-2.5 px-4 rounded-xl text-xs font-bold transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-arrow-left"></i>
+                    <span>Bosh sahifaga qaytish</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Right: My Products / Listings -->
+        <div class="lg:col-span-8 bg-white rounded-3xl border border-slate-100 shadow-soft p-6 sm:p-8 space-y-6">
+            <div class="flex items-center justify-between border-b border-slate-100 pb-4">
+                <div>
+                    <h3 class="font-bold text-slate-900 text-base flex items-center gap-2">
+                        <i class="fa-solid fa-boxes-stacked text-brand-600"></i>
+                        <span>Mening e'lonlarim</span>
+                    </h3>
+                    <p class="text-xs text-slate-400 mt-0.5">Siz tomoningizdan joylashtirilgan barcha mahsulotlar</p>
+                </div>
+                <a href="/products/add" class="text-xs font-bold text-brand-600 hover:text-brand-700 flex items-center gap-1 hover:underline">
+                    <i class="fa-solid fa-plus"></i> Yangi qo'shish
+                </a>
+            </div>
+
+            {% if current_user.products is defined and current_user.products %}
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {% for prod in current_user.products %}
+                        <div class="border border-slate-100 rounded-2xl p-4 hover:shadow-md transition bg-slate-50/50 flex flex-col justify-between">
+                            <div class="space-y-2">
+                                <h4 class="font-bold text-slate-800 text-sm line-clamp-1">{{ prod.name }}</h4>
+                                <p class="text-xs text-slate-500 line-clamp-2">{{ prod.description }}</p>
+                            </div>
+                            <div class="mt-4 pt-3 border-t border-slate-200/60 flex items-center justify-between">
+                                <span class="font-extrabold text-brand-600 text-sm">{{ prod.price }} so'm</span>
+                                <a href="/product/{{ prod.id }}" class="text-xs font-semibold text-slate-600 hover:text-brand-600">
+                                    Ko'rish <i class="fa-solid fa-arrow-right text-[10px]"></i>
+                                </a>
+                            </div>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <!-- Empty State -->
+                <div class="text-center py-12 px-4 space-y-4">
+                    <div class="w-16 h-16 rounded-full bg-brand-50 text-brand-500 flex items-center justify-center mx-auto text-2xl">
+                        <i class="fa-solid fa-box-open"></i>
+                    </div>
+                    <div class="space-y-1">
+                        <h4 class="font-bold text-slate-800 text-base">Hozircha hech qanday e'lon yo'q</h4>
+                        <p class="text-xs text-slate-400 max-w-sm mx-auto">
+                            O'z mahsulotlaringizni sotuvga qo'ying va minglab xaridorlarni jalb qiling!
+                        </p>
+                    </div>
+                    <a href="/products/add" class="inline-flex items-center gap-2 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold px-5 py-2.5 rounded-xl shadow-sm hover:shadow transition">
+                        <i class="fa-solid fa-plus-circle"></i>
+                        <span>Birinchi e'lonni joylashtirish</span>
+                    </a>
+                </div>
+            {% endif %}
+        </div>
+
+    </div>
+
+</div>
+{% endblock %}

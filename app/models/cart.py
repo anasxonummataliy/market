@@ -37,4 +37,5 @@ class CartItem(db.Model):
         BigInteger(), ForeignKey("carts.id"), nullable=False
     )
 
+    cart: Mapped["Cart"] = relationship("Cart", back_populates="items")
     product: Mapped["Product"] = relationship("Product", back_populates="cart_items")

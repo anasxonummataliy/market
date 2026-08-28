@@ -101,6 +101,57 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
         }
+
+        /* Toast Notifications Keyframes */
+        @keyframes toastSlideInRight {
+            0% {
+                transform: translateX(120%);
+                opacity: 0;
+            }
+            100% {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes toastSlideOutRight {
+            0% {
+                transform: translateX(0);
+                opacity: 1;
+                max-height: 200px;
+                margin-bottom: 0.75rem;
+            }
+            100% {
+                transform: translateX(120%);
+                opacity: 0;
+                max-height: 0;
+                margin-bottom: 0;
+                padding-top: 0;
+                padding-bottom: 0;
+            }
+        }
+
+        @keyframes toastProgress {
+            0% {
+                width: 100%;
+            }
+            100% {
+                width: 0%;
+            }
+        }
+
+        .toast-item {
+            animation: toastSlideInRight 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+            transition: all 0.3s ease;
+        }
+
+        .toast-item.toast-hiding {
+            animation: toastSlideOutRight 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        .toast-progress-bar {
+            animation: toastProgress 4s linear forwards;
+        }
     </style>
     {% block extra_head %}{% endblock %}
 </head>
@@ -251,7 +302,7 @@
                     {% endif %}
 
                     <!-- Mobile Menu Button -->
-                    <button id="mobileMenuBtn" class="md:hidden p-2 text-slate-600 hover:text-slate-900 rounded-lg hover:bg-slate-100 focus:outline-none">
+                    <button id="mobileMenuBtn" class="md:hidden p-2 text-slate-600 hover:text-slate-900 rounded-xl hover:bg-slate-100 focus:outline-none transition">
                         <i class="fa-solid fa-bars text-xl"></i>
                     </button>
                 </div>
@@ -275,34 +326,106 @@
                     </button>
                 </form>
             </div>
+
+            <!-- Mobile Menu Dropdown -->
+            <div id="mobileMenu" class="hidden md:hidden border-t border-slate-200/70 py-4 space-y-3">
+                {% if current_user is defined and current_user.is_authenticated %}
+                    <div class="flex items-center gap-3 p-3 bg-slate-50 rounded-2xl">
+                        <div class="w-10 h-10 rounded-xl bg-brand-600 text-white flex items-center justify-center font-bold text-sm shadow-sm">
+                            {{ current_user.first_name[0]|upper if current_user.first_name else current_user.username[0]|upper }}
+                        </div>
+                        <div>
+                            <p class="text-sm font-bold text-slate-800">{{ current_user.first_name }} {{ current_user.last_name }}</p>
+                            <p class="text-xs text-brand-600 font-semibold">@{{ current_user.username }}</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 gap-1 pt-1">
+                        <a href="/profile" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:bg-brand-50 hover:text-brand-600 transition">
+                            <i class="fa-solid fa-user text-slate-400 w-5"></i> Mening profilim
+                        </a>
+                        <a href="/products/add" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:bg-brand-50 hover:text-brand-600 transition">
+                            <i class="fa-solid fa-plus-circle text-slate-400 w-5"></i> Yangi e'lon qo'shish
+                        </a>
+                        <a href="/my-products" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:bg-brand-50 hover:text-brand-600 transition">
+                            <i class="fa-solid fa-rectangle-list text-slate-400 w-5"></i> Mening e'lonlarim
+                        </a>
+                        <a href="/cart" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-slate-700 hover:bg-brand-50 hover:text-brand-600 transition">
+                            <i class="fa-solid fa-bag-shopping text-slate-400 w-5"></i> Savatcham
+                        </a>
+                        <a href="/auth/logout" class="flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold text-rose-600 hover:bg-rose-50 transition">
+                            <i class="fa-solid fa-arrow-right-from-bracket text-rose-400 w-5"></i> Chiqish
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="flex flex-col gap-2 pt-1">
+                        <a href="/auth/login" class="w-full text-center py-2.5 px-4 rounded-xl text-sm font-semibold text-slate-700 bg-slate-100 hover:bg-slate-200 transition">
+                            Kirish
+                        </a>
+                        <a href="/auth/register" class="w-full text-center py-2.5 px-4 rounded-xl text-sm font-semibold text-white bg-brand-600 hover:bg-brand-700 shadow-sm transition">
+                            Ro'yxatdan o'tish
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
         </div>
     </header>
 
-    <!-- Flash Messages -->
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 w-full">
+    <!-- Floating Toast Flash Notifications (Top-Right Corner) -->
+    <div id="toastContainer" class="fixed top-6 right-6 z-[9999] flex flex-col gap-3 max-w-sm sm:max-w-md w-full px-4 sm:px-0 pointer-events-none">
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
-                <div class="space-y-3">
-                    {% for category, message in messages %}
-                        <div class="flex items-center justify-between p-4 rounded-xl border {% if category == 'error' or category == 'danger' %}bg-rose-50 border-rose-200 text-rose-800{% elif category == 'success' %}bg-emerald-50 border-emerald-200 text-emerald-800{% elif category == 'warning' %}bg-amber-50 border-amber-200 text-amber-800{% else %}bg-blue-50 border-blue-200 text-blue-800{% endif %} shadow-sm animate-fadeIn">
-                            <div class="flex items-center gap-3">
-                                {% if category == 'error' or category == 'danger' %}
-                                    <i class="fa-solid fa-circle-exclamation text-rose-500 text-lg"></i>
-                                {% elif category == 'success' %}
-                                    <i class="fa-solid fa-circle-check text-emerald-500 text-lg"></i>
-                                {% elif category == 'warning' %}
-                                    <i class="fa-solid fa-triangle-exclamation text-amber-500 text-lg"></i>
+                {% for category, message in messages %}
+                    {% set is_success = (category == 'success' or category == 'message') %}
+                    {% set is_danger = (category == 'error' or category == 'danger') %}
+                    {% set is_warning = (category == 'warning') %}
+                    {% set is_info = (category == 'info') %}
+
+                    <div class="toast-item pointer-events-auto bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border overflow-hidden {% if is_danger %}border-rose-200 shadow-rose-500/10{% elif is_warning %}border-amber-200 shadow-amber-500/10{% elif is_info %}border-blue-200 shadow-blue-500/10{% else %}border-emerald-200 shadow-emerald-500/10{% endif %}">
+                        <div class="p-4 flex items-start gap-3.5">
+                            <!-- Icon -->
+                            <div class="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 {% if is_danger %}bg-rose-50 text-rose-600{% elif is_warning %}bg-amber-50 text-amber-600{% elif is_info %}bg-blue-50 text-blue-600{% else %}bg-emerald-50 text-emerald-600{% endif %}">
+                                {% if is_danger %}
+                                    <i class="fa-solid fa-circle-exclamation text-lg"></i>
+                                {% elif is_warning %}
+                                    <i class="fa-solid fa-triangle-exclamation text-lg"></i>
+                                {% elif is_info %}
+                                    <i class="fa-solid fa-circle-info text-lg"></i>
                                 {% else %}
-                                    <i class="fa-solid fa-circle-info text-blue-500 text-lg"></i>
+                                    <i class="fa-solid fa-circle-check text-lg text-emerald-500"></i>
                                 {% endif %}
-                                <span class="text-sm font-medium">{{ message }}</span>
                             </div>
-                            <button onclick="this.parentElement.remove()" class="text-slate-400 hover:text-slate-600 p-1">
-                                <i class="fa-solid fa-xmark"></i>
-                            </button>
+
+                            <!-- Content -->
+                            <div class="flex-1 pt-0.5 min-w-0">
+                                <div class="flex items-center justify-between gap-2">
+                                    <h5 class="text-xs font-bold uppercase tracking-wider {% if is_danger %}text-rose-700{% elif is_warning %}text-amber-700{% elif is_info %}text-blue-700{% else %}text-emerald-700{% endif %}">
+                                        {% if is_danger %}
+                                            Xatolik
+                                        {% elif is_warning %}
+                                            Diqqat
+                                        {% elif is_info %}
+                                            Ma'lumot
+                                        {% else %}
+                                            Muvaffaqiyatli!
+                                        {% endif %}
+                                    </h5>
+                                    <!-- Close Button -->
+                                    <button type="button" onclick="dismissToast(this)" class="text-slate-400 hover:text-slate-600 -mr-1 -mt-1 p-1 rounded-lg transition" title="Yopish">
+                                        <i class="fa-solid fa-xmark text-sm"></i>
+                                    </button>
+                                </div>
+                                <p class="text-sm font-medium text-slate-800 mt-0.5 leading-snug">
+                                    {{ message }}
+                                </p>
+                            </div>
                         </div>
-                    {% endfor %}
-                </div>
+
+                        <!-- Progress Bar (Shrinks over 4s) -->
+                        <div class="w-full bg-slate-100 h-1">
+                            <div class="toast-progress-bar h-full {% if is_danger %}bg-rose-500{% elif is_warning %}bg-amber-500{% elif is_info %}bg-blue-500{% else %}bg-emerald-500{% endif %}"></div>
+                        </div>
+                    </div>
+                {% endfor %}
             {% endif %}
         {% endwith %}
     </div>
@@ -391,6 +514,39 @@
         </div>
     </footer>
 
+    <script>
+        // Mobile Menu Toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+        if (mobileMenuBtn && mobileMenu) {
+            mobileMenuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+        }
+
+        // Toast Dismiss Function
+        function dismissToast(btnOrEl) {
+            const toast = btnOrEl.closest ? btnOrEl.closest('.toast-item') : btnOrEl;
+            if (toast && !toast.classList.contains('toast-hiding')) {
+                toast.classList.add('toast-hiding');
+                setTimeout(() => {
+                    if (toast && toast.parentNode) {
+                        toast.parentNode.removeChild(toast);
+                    }
+                }, 450);
+            }
+        }
+
+        // Auto-dismiss toasts after 4 seconds
+        document.addEventListener('DOMContentLoaded', () => {
+            const toasts = document.querySelectorAll('.toast-item');
+            toasts.forEach((toast) => {
+                setTimeout(() => {
+                    dismissToast(toast);
+                }, 4000);
+            });
+        });
+    </script>
     {% block extra_scripts %}{% endblock %}
 </body>
 </html>

@@ -1,0 +1,267 @@
+{% extends "base.html" %}
+
+{% block title %}Ro'yxatdan o'tish — Market.uz{% endblock %}
+
+{% block content %}
+<div class="min-h-[calc(100vh-200px)] py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
+    <div class="max-w-4xl w-full grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+        
+        <!-- Left Side: Promo / Value Proposition -->
+        <div class="hidden lg:flex lg:col-span-5 bg-gradient-to-br from-brand-700 via-brand-600 to-accent-600 rounded-3xl p-8 text-white flex-col justify-between relative overflow-hidden shadow-xl">
+            <!-- Background Decorative Blobs -->
+            <div class="absolute -top-16 -left-16 w-48 h-48 bg-white/10 rounded-full blur-2xl"></div>
+            <div class="absolute -bottom-16 -right-16 w-56 h-56 bg-accent-500/20 rounded-full blur-2xl"></div>
+            
+            <div class="relative z-10">
+                <div class="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center text-2xl mb-6 shadow-inner">
+                    <i class="fa-solid fa-user-plus"></i>
+                </div>
+                <h2 class="text-2xl font-extrabold tracking-tight leading-snug">
+                    O'zbekistonning eng katta onlayn bozoriga qo'shiling!
+                </h2>
+                <p class="text-brand-100 text-sm mt-3 leading-relaxed">
+                    Bir necha soniyada hisob yarating va minglab xaridor hamda sotuvchilar bilan savdo qiling.
+                </p>
+            </div>
+
+            <div class="space-y-4 my-8 relative z-10">
+                <div class="flex items-center gap-3.5 bg-white/10 backdrop-blur-sm p-3.5 rounded-2xl border border-white/10">
+                    <div class="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center text-brand-100 flex-shrink-0">
+                        <i class="fa-solid fa-bolt text-amber-300"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold">Tez va Bepul</h4>
+                        <p class="text-[11px] text-brand-100">Cheklovlarsiz bepul e'lon joylashtirish</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3.5 bg-white/10 backdrop-blur-sm p-3.5 rounded-2xl border border-white/10">
+                    <div class="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center text-brand-100 flex-shrink-0">
+                        <i class="fa-solid fa-shield-halved text-emerald-300"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold">100% Xavfsiz</h4>
+                        <p class="text-[11px] text-brand-100">Ma'lumotlaringiz to'liq himoyalangan</p>
+                    </div>
+                </div>
+
+                <div class="flex items-center gap-3.5 bg-white/10 backdrop-blur-sm p-3.5 rounded-2xl border border-white/10">
+                    <div class="w-9 h-9 rounded-xl bg-white/20 flex items-center justify-center text-brand-100 flex-shrink-0">
+                        <i class="fa-solid fa-chart-line text-cyan-300"></i>
+                    </div>
+                    <div>
+                        <h4 class="text-xs font-bold">Keng Auditoriya</h4>
+                        <p class="text-[11px] text-brand-100">Har kuni 50,000+ dan ortiq tashrif buyuruvchilar</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="relative z-10 border-t border-white/20 pt-4 text-xs text-brand-100">
+                Savollaringiz bormi? <a href="#support" class="text-white font-semibold underline hover:text-cyan-200">Biz bilan bog'laning</a>
+            </div>
+        </div>
+
+        <!-- Right Side: Registration Form -->
+        <div class="lg:col-span-7 bg-white rounded-3xl border border-slate-100 shadow-soft p-6 sm:p-10 flex flex-col justify-center">
+            
+            <div class="mb-8">
+                <span class="text-xs font-bold uppercase tracking-wider text-brand-600 bg-brand-50 px-3 py-1 rounded-full inline-block mb-2">
+                    Yangi foydalanuvchi
+                </span>
+                <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                    Ro'yxatdan o'tish
+                </h1>
+                <p class="text-slate-500 text-sm mt-1">
+                    Iltimos, ma'lumotlaringizni to'ldiring
+                </p>
+            </div>
+
+            <form method="POST" action="{{ url_for('auth.register') }}" class="space-y-4" novalidate>
+                {{ form.hidden_tag() }}
+
+                <!-- Name Fields (First Name & Last Name) -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <!-- First Name -->
+                    <div>
+                        <label for="first_name" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                            Ism <span class="text-rose-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                <i class="fa-regular fa-user text-sm"></i>
+                            </div>
+                            {{ form.first_name(
+                                id="first_name",
+                                placeholder="Masalan: Sardor",
+                                class="w-full bg-slate-50 text-slate-800 placeholder-slate-400 pl-10 pr-3.5 py-2.5 rounded-xl text-sm border " ~ ("border-rose-300 bg-rose-50/30 focus:border-rose-500 focus:ring-rose-500/20" if form.first_name.errors else "border-slate-200 focus:border-brand-500 focus:bg-white focus:ring-brand-500/10") ~ " focus:outline-none focus:ring-4 transition duration-200"
+                            ) }}
+                        </div>
+                        {% if form.first_name.errors %}
+                            <ul class="mt-1.5 space-y-0.5">
+                                {% for error in form.first_name.errors %}
+                                    <li class="text-xs text-rose-500 flex items-center gap-1">
+                                        <i class="fa-solid fa-circle-exclamation text-[10px]"></i> {{ error }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+
+                    <!-- Last Name -->
+                    <div>
+                        <label for="last_name" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                            Familiya <span class="text-rose-500">*</span>
+                        </label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                                <i class="fa-regular fa-user text-sm"></i>
+                            </div>
+                            {{ form.last_name(
+                                id="last_name",
+                                placeholder="Masalan: Aliyev",
+                                class="w-full bg-slate-50 text-slate-800 placeholder-slate-400 pl-10 pr-3.5 py-2.5 rounded-xl text-sm border " ~ ("border-rose-300 bg-rose-50/30 focus:border-rose-500 focus:ring-rose-500/20" if form.last_name.errors else "border-slate-200 focus:border-brand-500 focus:bg-white focus:ring-brand-500/10") ~ " focus:outline-none focus:ring-4 transition duration-200"
+                            ) }}
+                        </div>
+                        {% if form.last_name.errors %}
+                            <ul class="mt-1.5 space-y-0.5">
+                                {% for error in form.last_name.errors %}
+                                    <li class="text-xs text-rose-500 flex items-center gap-1">
+                                        <i class="fa-solid fa-circle-exclamation text-[10px]"></i> {{ error }}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <!-- Username -->
+                <div>
+                    <label for="username" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                        Foydalanuvchi nomi (Username) <span class="text-rose-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 font-semibold text-sm">
+                            @
+                        </div>
+                        {{ form.username(
+                            id="username",
+                            placeholder="username_123",
+                            autocomplete="username",
+                            class="w-full bg-slate-50 text-slate-800 placeholder-slate-400 pl-9 pr-3.5 py-2.5 rounded-xl text-sm border " ~ ("border-rose-300 bg-rose-50/30 focus:border-rose-500 focus:ring-rose-500/20" if form.username.errors else "border-slate-200 focus:border-brand-500 focus:bg-white focus:ring-brand-500/10") ~ " focus:outline-none focus:ring-4 transition duration-200"
+                        ) }}
+                    </div>
+                    {% if form.username.errors %}
+                        <ul class="mt-1.5 space-y-0.5">
+                            {% for error in form.username.errors %}
+                                <li class="text-xs text-rose-500 flex items-center gap-1">
+                                    <i class="fa-solid fa-circle-exclamation text-[10px]"></i> {{ error }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-[11px] text-slate-400 mt-1">Faqat harflar, sonlar va pastki chiziq (_) ruxsat etiladi (kamida 6 belgi).</p>
+                    {% endif %}
+                </div>
+
+                <!-- Password -->
+                <div>
+                    <label for="password" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                        Parol <span class="text-rose-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                            <i class="fa-solid fa-lock text-sm"></i>
+                        </div>
+                        {{ form.password(
+                            id="password",
+                            placeholder="••••••••",
+                            autocomplete="new-password",
+                            class="w-full bg-slate-50 text-slate-800 placeholder-slate-400 pl-10 pr-10 py-2.5 rounded-xl text-sm border " ~ ("border-rose-300 bg-rose-50/30 focus:border-rose-500 focus:ring-rose-500/20" if form.password.errors else "border-slate-200 focus:border-brand-500 focus:bg-white focus:ring-brand-500/10") ~ " focus:outline-none focus:ring-4 transition duration-200"
+                        ) }}
+                        <button type="button" onclick="togglePasswordVisibility('password', this)" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none">
+                            <i class="fa-regular fa-eye text-sm"></i>
+                        </button>
+                    </div>
+                    {% if form.password.errors %}
+                        <ul class="mt-1.5 space-y-0.5">
+                            {% for error in form.password.errors %}
+                                <li class="text-xs text-rose-500 flex items-center gap-1">
+                                    <i class="fa-solid fa-circle-exclamation text-[10px]"></i> {{ error }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        <p class="text-[11px] text-slate-400 mt-1">Kamida 8 ta belgidan iborat bo'lishi kerak.</p>
+                    {% endif %}
+                </div>
+
+                <!-- Confirm Password -->
+                <div>
+                    <label for="confirm" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                        Parolni tasdiqlash <span class="text-rose-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                            <i class="fa-solid fa-shield-check text-sm"></i>
+                        </div>
+                        {{ form.confirm(
+                            id="confirm",
+                            placeholder="••••••••",
+                            autocomplete="new-password",
+                            class="w-full bg-slate-50 text-slate-800 placeholder-slate-400 pl-10 pr-10 py-2.5 rounded-xl text-sm border " ~ ("border-rose-300 bg-rose-50/30 focus:border-rose-500 focus:ring-rose-500/20" if form.confirm.errors else "border-slate-200 focus:border-brand-500 focus:bg-white focus:ring-brand-500/10") ~ " focus:outline-none focus:ring-4 transition duration-200"
+                        ) }}
+                        <button type="button" onclick="togglePasswordVisibility('confirm', this)" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none">
+                            <i class="fa-regular fa-eye text-sm"></i>
+                        </button>
+                    </div>
+                    {% if form.confirm.errors %}
+                        <ul class="mt-1.5 space-y-0.5">
+                            {% for error in form.confirm.errors %}
+                                <li class="text-xs text-rose-500 flex items-center gap-1">
+                                    <i class="fa-solid fa-circle-exclamation text-[10px]"></i> {{ error }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+
+                <!-- Submit Button -->
+                <div class="pt-3">
+                    <button type="submit" class="w-full bg-gradient-to-r from-brand-600 to-accent-600 hover:from-brand-700 hover:to-accent-700 text-white font-bold py-3 px-4 rounded-xl shadow-md shadow-brand-500/20 hover:shadow-glow transform active:scale-[0.99] transition duration-200 flex items-center justify-center gap-2 text-sm">
+                        <i class="fa-solid fa-user-check"></i>
+                        <span>Ro'yxatdan o'tish</span>
+                    </button>
+                </div>
+            </form>
+
+            <!-- Switch to Login -->
+            <div class="mt-6 text-center pt-6 border-t border-slate-100">
+                <p class="text-sm text-slate-600">
+                    Akkauntingiz bormi?
+                    <a href="{{ url_for('auth.login') }}" class="font-bold text-brand-600 hover:text-brand-700 hover:underline ml-1">
+                        Tizimga kirish
+                    </a>
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    function togglePasswordVisibility(fieldId, buttonElement) {
+        const input = document.getElementById(fieldId);
+        const icon = buttonElement.querySelector('i');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye', 'fa-regular');
+            icon.classList.add('fa-eye-slash', 'fa-solid', 'text-brand-600');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash', 'fa-solid', 'text-brand-600');
+            icon.classList.add('fa-eye', 'fa-regular');
+        }
+    }
+</script>
+{% endblock %}

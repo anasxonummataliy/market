@@ -1,0 +1,138 @@
+{% extends "base.html" %}
+
+{% block title %}Tizimga kirish — Market.uz{% endblock %}
+
+{% block content %}
+<div class="min-h-[calc(100vh-200px)] py-12 px-4 sm:px-6 lg:px-8 flex items-center justify-center">
+    <div class="max-w-md w-full">
+        
+        <!-- Login Card -->
+        <div class="bg-white rounded-3xl border border-slate-100 shadow-soft p-6 sm:p-10 relative overflow-hidden">
+            
+            <!-- Header Glow Accent -->
+            <div class="absolute top-0 left-0 right-0 h-1.5 bg-gradient-to-r from-brand-600 to-accent-500"></div>
+
+            <div class="text-center mb-8">
+                <div class="w-14 h-14 mx-auto rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center text-2xl mb-4 shadow-inner">
+                    <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                </div>
+                <h1 class="text-2xl sm:text-3xl font-extrabold text-slate-900 tracking-tight">
+                    Xush kelibsiz!
+                </h1>
+                <p class="text-slate-500 text-sm mt-1.5">
+                    Hisobingizga kirish uchun ma'lumotlaringizni kiriting
+                </p>
+            </div>
+
+            <form method="POST" action="{{ url_for('auth.login') }}" class="space-y-5" novalidate>
+                {{ form.hidden_tag() }}
+
+                <!-- Username -->
+                <div>
+                    <label for="username" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider mb-1.5">
+                        Foydalanuvchi nomi (Username) <span class="text-rose-500">*</span>
+                    </label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400 font-semibold text-sm">
+                            @
+                        </div>
+                        {{ form.username(
+                            id="username",
+                            placeholder="username_123",
+                            autocomplete="username",
+                            class="w-full bg-slate-50 text-slate-800 placeholder-slate-400 pl-9 pr-3.5 py-2.5 rounded-xl text-sm border " ~ ("border-rose-300 bg-rose-50/30 focus:border-rose-500 focus:ring-rose-500/20" if form.username.errors else "border-slate-200 focus:border-brand-500 focus:bg-white focus:ring-brand-500/10") ~ " focus:outline-none focus:ring-4 transition duration-200"
+                        ) }}
+                    </div>
+                    {% if form.username.errors %}
+                        <ul class="mt-1.5 space-y-0.5">
+                            {% for error in form.username.errors %}
+                                <li class="text-xs text-rose-500 flex items-center gap-1">
+                                    <i class="fa-solid fa-circle-exclamation text-[10px]"></i> {{ error }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+
+                <!-- Password -->
+                <div>
+                    <div class="flex items-center justify-between mb-1.5">
+                        <label for="password" class="block text-xs font-semibold text-slate-700 uppercase tracking-wider">
+                            Parol <span class="text-rose-500">*</span>
+                        </label>
+                        <a href="#support" class="text-xs font-medium text-brand-600 hover:text-brand-700 hover:underline">
+                            Parolni unutdingizmi?
+                        </a>
+                    </div>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-slate-400">
+                            <i class="fa-solid fa-lock text-sm"></i>
+                        </div>
+                        {{ form.password(
+                            id="password",
+                            placeholder="••••••••",
+                            autocomplete="current-password",
+                            class="w-full bg-slate-50 text-slate-800 placeholder-slate-400 pl-10 pr-10 py-2.5 rounded-xl text-sm border " ~ ("border-rose-300 bg-rose-50/30 focus:border-rose-500 focus:ring-rose-500/20" if form.password.errors else "border-slate-200 focus:border-brand-500 focus:bg-white focus:ring-brand-500/10") ~ " focus:outline-none focus:ring-4 transition duration-200"
+                        ) }}
+                        <button type="button" onclick="togglePasswordVisibility('password', this)" class="absolute inset-y-0 right-0 pr-3.5 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none">
+                            <i class="fa-regular fa-eye text-sm"></i>
+                        </button>
+                    </div>
+                    {% if form.password.errors %}
+                        <ul class="mt-1.5 space-y-0.5">
+                            {% for error in form.password.errors %}
+                                <li class="text-xs text-rose-500 flex items-center gap-1">
+                                    <i class="fa-solid fa-circle-exclamation text-[10px]"></i> {{ error }}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                </div>
+
+                <!-- Submit Button -->
+                <div class="pt-2">
+                    <button type="submit" class="w-full bg-gradient-to-r from-brand-600 to-accent-600 hover:from-brand-700 hover:to-accent-700 text-white font-bold py-3 px-4 rounded-xl shadow-md shadow-brand-500/20 hover:shadow-glow transform active:scale-[0.99] transition duration-200 flex items-center justify-center gap-2 text-sm">
+                        <i class="fa-solid fa-arrow-right-to-bracket"></i>
+                        <span>Kirish</span>
+                    </button>
+                </div>
+            </form>
+
+            <!-- Switch to Register -->
+            <div class="mt-8 text-center pt-6 border-t border-slate-100">
+                <p class="text-sm text-slate-600">
+                    Akkauntingiz yo'qmi?
+                    <a href="{{ url_for('auth.register') }}" class="font-bold text-brand-600 hover:text-brand-700 hover:underline ml-1">
+                        Ro'yxatdan o'tish
+                    </a>
+                </p>
+            </div>
+        </div>
+
+        <!-- Security Badge -->
+        <div class="mt-6 flex items-center justify-center gap-2 text-xs text-slate-400">
+            <i class="fa-solid fa-shield-check text-brand-500"></i>
+            <span>Shifrlangan va xavfsiz ulanish</span>
+        </div>
+
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    function togglePasswordVisibility(fieldId, buttonElement) {
+        const input = document.getElementById(fieldId);
+        const icon = buttonElement.querySelector('i');
+        if (input.type === 'password') {
+            input.type = 'text';
+            icon.classList.remove('fa-eye', 'fa-regular');
+            icon.classList.add('fa-eye-slash', 'fa-solid', 'text-brand-600');
+        } else {
+            input.type = 'password';
+            icon.classList.remove('fa-eye-slash', 'fa-solid', 'text-brand-600');
+            icon.classList.add('fa-eye', 'fa-regular');
+        }
+    }
+</script>
+{% endblock %}
