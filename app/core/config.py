@@ -13,7 +13,7 @@ class Conf(BaseSettings):
 
     @property
     def db_uri(self):
-        return f"postgresql://{self.pg_user}:{self.pg_pass}@{self.pg_host}:{self.pg}/{self.pg_db}"
+        return f"postgresql://{self.pg_user}:{self.pg_pass}@{self.pg_host}:{self.pg_port}/{self.pg_db}"
 
 
 conf = Conf()

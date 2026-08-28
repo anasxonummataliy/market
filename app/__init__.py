@@ -9,14 +9,14 @@ def create_app():
 
     app.config.from_mapping(
         SECRET_KEY=conf.secret_key,
-        WTF_CSRF_SECRET_KEY=conf.wtf_csrf_secret_key,
+        WTF_CSRF_SECRET_KEY=conf.wtf_scrf_secret_key,
         SQLALCHEMY_DATABASE_URI=conf.db_uri,
     )
 
     db.init_app(app)
     migrate.init_app(app, db)
     bcrypt.init_app(app)
-    login_manager(app)
+    login_manager.init_app(app)
 
     register_all_blueprints(app)
 
