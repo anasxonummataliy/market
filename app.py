@@ -1,6 +1,8 @@
-def main():
-    print("Hello from market!")
+from flask import Flask
+
+app = Flask(__name__)
 
 
-if __name__ == "__main__":
-    main()
+
+if __name__ == '__main__':
+    app.run(debug=True, port=5555)
