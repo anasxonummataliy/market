@@ -8,3 +8,4 @@ main_bp = Blueprint("main", __name__)
 def home_page():
     return render_template('home.html')
 
+

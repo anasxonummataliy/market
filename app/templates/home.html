@@ -1,0 +1,650 @@
+{% extends 'base.html' %}
+
+{% block title %}Bosh sahifa — Zamonaviy Onlayn Market va E'lonlar{% endblock %}
+
+{% block content %}
+<div class="space-y-12 pb-16">
+
+    <!-- HERO SECTION -->
+    <section class="relative overflow-hidden bg-gradient-to-b from-brand-50/70 via-slate-50 to-slate-100/50 py-12 md:py-20 border-b border-slate-200/70">
+        <!-- Subtle Ambient Glows -->
+        <div class="absolute -top-24 -left-24 w-96 h-96 bg-brand-400/20 rounded-full blur-3xl pointer-events-none"></div>
+        <div class="absolute -bottom-24 -right-24 w-96 h-96 bg-accent-500/20 rounded-full blur-3xl pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="text-center max-w-3xl mx-auto space-y-6">
+                
+                <!-- Pill Badge -->
+                <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white shadow-sm border border-slate-200/80 text-xs font-semibold text-brand-700 animate-bounce-subtle">
+                    <span class="flex h-2 w-2 rounded-full bg-emerald-500"></span>
+                    <span>O'zbekistondagi eng qulay e'lonlar va savdo platformasi</span>
+                </div>
+
+                <!-- Main Heading -->
+                <h1 class="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-slate-900 tracking-tight leading-tight">
+                    Istalgan mahsulotni <span class="gradient-text">oson toping</span> yoki soting
+                </h1>
+
+                <p class="text-base sm:text-lg text-slate-600 leading-relaxed font-normal max-w-2xl mx-auto">
+                    Minglab foydalanuvchilar orasida mahsulotlarni qidiring, to'g'ridan-to'g'ri sotuvchi bilan bog'laning yoki o'z e'loningizni 1 daqiqada joylashtiring.
+                </p>
+
+                <!-- Hero Search & Filter Box -->
+                <div class="pt-2 max-w-2xl mx-auto">
+                    <form action="{{ url_for('main.home_page') if 'main.home_page' in url_for.__globals__['current_app'].view_functions else '/' }}" method="GET" class="bg-white p-2 sm:p-2.5 rounded-2xl shadow-xl shadow-slate-200/60 border border-slate-200 flex flex-col sm:flex-row gap-2">
+                        
+                        <!-- Category Select (if categories available) -->
+                        <div class="relative min-w-[150px] sm:border-r border-slate-200 sm:pr-2">
+                            <select 
+                                name="category_id" 
+                                class="w-full bg-transparent text-slate-700 font-medium text-sm py-2.5 px-3 focus:outline-none cursor-pointer appearance-none"
+                            >
+                                <option value="">Barcha kategoriyalar</option>
+                                {% if categories is defined and categories %}
+                                    {% for cat in categories %}
+                                        <option value="{{ cat.id }}" {% if request.args.get('category_id')|string == cat.id|string %}selected{% endif %}>
+                                            {{ cat.name }}
+                                        </option>
+                                    {% endfor %}
+                                {% else %}
+                                    <option value="1">Elektronika</option>
+                                    <option value="2">Kiyim-kechak</option>
+                                    <option value="3">Uy va maishiy</option>
+                                    <option value="4">Avtotransport</option>
+                                {% endif %}
+                            </select>
+                            <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-xs">
+                                <i class="fa-solid fa-chevron-down"></i>
+                            </div>
+                        </div>
+
+                        <!-- Keyword Input -->
+                        <div class="relative flex-1">
+                            <input 
+                                type="text" 
+                                name="q" 
+                                value="{{ request.args.get('q', '') }}" 
+                                placeholder="Masalan: iPhone 15 Pro, Noutbuk, Krossovka..." 
+                                class="w-full bg-transparent text-slate-800 placeholder-slate-400 text-sm py-2.5 pl-3 pr-4 focus:outline-none"
+                            >
+                        </div>
+
+                        <!-- Search Button -->
+                        <button 
+                            type="submit" 
+                            class="bg-brand-600 hover:bg-brand-700 text-white font-semibold px-6 py-2.5 rounded-xl shadow-md hover:shadow-glow transition duration-200 flex items-center justify-center gap-2 text-sm"
+                        >
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                            <span>Qidirish</span>
+                        </button>
+                    </form>
+
+                    <!-- Popular Search Tags -->
+                    <div class="flex flex-wrap items-center justify-center gap-2 mt-3 text-xs text-slate-500">
+                        <span class="font-medium text-slate-400">Ommabop:</span>
+                        <a href="/?q=iPhone" class="px-2.5 py-1 bg-white hover:bg-brand-50 hover:text-brand-600 rounded-full border border-slate-200 transition">iPhone</a>
+                        <a href="/?q=MacBook" class="px-2.5 py-1 bg-white hover:bg-brand-50 hover:text-brand-600 rounded-full border border-slate-200 transition">MacBook</a>
+                        <a href="/?q=Samsung" class="px-2.5 py-1 bg-white hover:bg-brand-50 hover:text-brand-600 rounded-full border border-slate-200 transition">Samsung</a>
+                        <a href="/?q=Krossovka" class="px-2.5 py-1 bg-white hover:bg-brand-50 hover:text-brand-600 rounded-full border border-slate-200 transition">Krossovka</a>
+                    </div>
+                </div>
+
+                <!-- Stats Highlights -->
+                <div class="grid grid-cols-3 gap-4 pt-6 max-w-lg mx-auto border-t border-slate-200/80">
+                    <div>
+                        <p class="text-xl sm:text-2xl font-black text-slate-900">10,000+</p>
+                        <p class="text-xs text-slate-500 font-medium">Faol e'lonlar</p>
+                    </div>
+                    <div>
+                        <p class="text-xl sm:text-2xl font-black text-slate-900">50,000+</p>
+                        <p class="text-xs text-slate-500 font-medium">Foydalanuvchilar</p>
+                    </div>
+                    <div>
+                        <p class="text-xl sm:text-2xl font-black text-emerald-600">100%</p>
+                        <p class="text-xs text-slate-500 font-medium">Bepul e'lon berish</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+
+    <!-- CATEGORIES SECTION -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex items-center justify-between mb-6">
+            <div>
+                <h2 class="text-2xl font-bold text-slate-900 tracking-tight">Kategoriyalar</h2>
+                <p class="text-sm text-slate-500">Kerakli bo'limni tanlang va mahsulotlarni filtrlang</p>
+            </div>
+            <a href="/" class="text-sm font-semibold text-brand-600 hover:text-brand-700 flex items-center gap-1.5 transition">
+                <span>Barchasini tozalash</span>
+                <i class="fa-solid fa-arrow-rotate-left text-xs"></i>
+            </a>
+        </div>
+
+        <!-- Category Badges Grid -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3 sm:gap-4">
+            
+            {% if categories is defined and categories %}
+                {% for cat in categories %}
+                <a href="/?category_id={{ cat.id }}" class="group p-4 bg-white hover:bg-brand-50/60 rounded-2xl border {% if request.args.get('category_id')|string == cat.id|string %}border-brand-500 bg-brand-50/80 ring-2 ring-brand-500/20{% else %}border-slate-200/80 hover:border-brand-300{% endif %} transition duration-200 shadow-soft flex flex-col items-center text-center gap-3">
+                    <div class="w-12 h-12 rounded-xl bg-brand-100 text-brand-600 group-hover:scale-110 transition duration-300 flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-shapes"></i>
+                    </div>
+                    <span class="text-sm font-bold text-slate-800 group-hover:text-brand-600 line-clamp-1">
+                        {{ cat.name }}
+                    </span>
+                </a>
+                {% endfor %}
+            {% else %}
+                <!-- Modern Default Category Showcase (Fallback) -->
+                <a href="/?category_id=1" class="group p-4 bg-white hover:bg-brand-50/60 rounded-2xl border border-slate-200/80 hover:border-brand-300 transition duration-200 shadow-soft flex flex-col items-center text-center gap-3">
+                    <div class="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-600 group-hover:scale-110 transition duration-300 flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-laptop"></i>
+                    </div>
+                    <span class="text-sm font-bold text-slate-800 group-hover:text-brand-600">Elektronika</span>
+                </a>
+
+                <a href="/?category_id=2" class="group p-4 bg-white hover:bg-brand-50/60 rounded-2xl border border-slate-200/80 hover:border-brand-300 transition duration-200 shadow-soft flex flex-col items-center text-center gap-3">
+                    <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 group-hover:scale-110 transition duration-300 flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-shirt"></i>
+                    </div>
+                    <span class="text-sm font-bold text-slate-800 group-hover:text-brand-600">Kiyim-kechak</span>
+                </a>
+
+                <a href="/?category_id=3" class="group p-4 bg-white hover:bg-brand-50/60 rounded-2xl border border-slate-200/80 hover:border-brand-300 transition duration-200 shadow-soft flex flex-col items-center text-center gap-3">
+                    <div class="w-12 h-12 rounded-xl bg-amber-100 text-amber-600 group-hover:scale-110 transition duration-300 flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-car"></i>
+                    </div>
+                    <span class="text-sm font-bold text-slate-800 group-hover:text-brand-600">Avtomobillar</span>
+                </a>
+
+                <a href="/?category_id=4" class="group p-4 bg-white hover:bg-brand-50/60 rounded-2xl border border-slate-200/80 hover:border-brand-300 transition duration-200 shadow-soft flex flex-col items-center text-center gap-3">
+                    <div class="w-12 h-12 rounded-xl bg-cyan-100 text-cyan-600 group-hover:scale-110 transition duration-300 flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-house"></i>
+                    </div>
+                    <span class="text-sm font-bold text-slate-800 group-hover:text-brand-600">Ko'chmas mulk</span>
+                </a>
+
+                <a href="/?category_id=5" class="group p-4 bg-white hover:bg-brand-50/60 rounded-2xl border border-slate-200/80 hover:border-brand-300 transition duration-200 shadow-soft flex flex-col items-center text-center gap-3">
+                    <div class="w-12 h-12 rounded-xl bg-rose-100 text-rose-600 group-hover:scale-110 transition duration-300 flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-couch"></i>
+                    </div>
+                    <span class="text-sm font-bold text-slate-800 group-hover:text-brand-600">Uy va bog'</span>
+                </a>
+
+                <a href="/?category_id=6" class="group p-4 bg-white hover:bg-brand-50/60 rounded-2xl border border-slate-200/80 hover:border-brand-300 transition duration-200 shadow-soft flex flex-col items-center text-center gap-3">
+                    <div class="w-12 h-12 rounded-xl bg-purple-100 text-purple-600 group-hover:scale-110 transition duration-300 flex items-center justify-center text-xl">
+                        <i class="fa-solid fa-briefcase"></i>
+                    </div>
+                    <span class="text-sm font-bold text-slate-800 group-hover:text-brand-600">Xizmatlar</span>
+                </a>
+            {% endif %}
+
+        </div>
+    </section>
+
+
+    <!-- PRODUCTS GRID SECTION -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Filter & Header Bar -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-6 border-b border-slate-200">
+            <div>
+                <div class="flex items-center gap-2">
+                    <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight">Barcha mahsulotlar</h2>
+                    {% if request.args.get('q') %}
+                        <span class="text-xs bg-brand-100 text-brand-700 font-semibold px-2.5 py-0.5 rounded-full">
+                            Qidiruv: "{{ request.args.get('q') }}"
+                        </span>
+                    {% endif %}
+                </div>
+                <p class="text-sm text-slate-500 mt-0.5">Yangi va tasdiqlangan e'lonlar ro'yxati</p>
+            </div>
+
+            <!-- Sorting & Action Controls -->
+            <div class="flex items-center gap-3">
+                <form id="sortForm" action="{{ url_for('main.home_page') if 'main.home_page' in url_for.__globals__['current_app'].view_functions else '/' }}" method="GET" class="flex items-center gap-2">
+                    {% if request.args.get('q') %}
+                        <input type="hidden" name="q" value="{{ request.args.get('q') }}">
+                    {% endif %}
+                    {% if request.args.get('category_id') %}
+                        <input type="hidden" name="category_id" value="{{ request.args.get('category_id') }}">
+                    {% endif %}
+
+                    <label for="sort" class="text-xs font-semibold text-slate-500 hidden sm:inline">Saralash:</label>
+                    <div class="relative">
+                        <select 
+                            id="sort" 
+                            name="sort" 
+                            onchange="this.form.submit()" 
+                            class="bg-white border border-slate-200 text-slate-700 text-xs font-semibold py-2 pl-3 pr-8 rounded-xl focus:outline-none focus:border-brand-500 cursor-pointer shadow-sm"
+                        >
+                            <option value="newest" {% if request.args.get('sort') == 'newest' %}selected{% endif %}>Eng yangilari</option>
+                            <option value="price_asc" {% if request.args.get('sort') == 'price_asc' %}selected{% endif %}>Narx: Arzondan qimmatga</option>
+                            <option value="price_desc" {% if request.args.get('sort') == 'price_desc' %}selected{% endif %}>Narx: Qimmatdan arzonga</option>
+                        </select>
+                        <div class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none text-slate-400 text-[10px]">
+                            <i class="fa-solid fa-chevron-down"></i>
+                        </div>
+                    </div>
+                </form>
+
+                <a href="/products/add" class="inline-flex items-center gap-1.5 bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold px-3.5 py-2 rounded-xl shadow-sm transition">
+                    <i class="fa-solid fa-plus"></i>
+                    <span class="hidden sm:inline">E'lon berish</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Product Cards Container -->
+        {% set prod_list = products.items if (products is defined and products.items is defined) else (products if products is defined else []) %}
+
+        {% if prod_list %}
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 pt-6">
+                {% for product in prod_list %}
+                <div class="product-card bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-sm flex flex-col group">
+                    
+                    <!-- Product Image & Badges -->
+                    <div class="relative aspect-[4/3] bg-slate-100 overflow-hidden">
+                        {% if product.image_url %}
+                            <img 
+                                src="{{ product.image_url if product.image_url.startswith('http') else url_for('static', filename='images/' ~ product.image_url) }}" 
+                                alt="{{ product.title }}" 
+                                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                loading="lazy"
+                            >
+                        {% else %}
+                            <!-- Fallback Beautiful Image Gradient Placeholder -->
+                            <div class="w-full h-full flex flex-col items-center justify-center bg-gradient-to-tr from-slate-100 via-slate-200 to-indigo-50 text-slate-400">
+                                <i class="fa-solid fa-image text-3xl mb-1 text-slate-300"></i>
+                                <span class="text-xs font-medium text-slate-400">Rasm yuklanmagan</span>
+                            </div>
+                        {% endif %}
+
+                        <!-- Category Pill -->
+                        <div class="absolute top-3 left-3">
+                            <span class="bg-slate-900/80 backdrop-blur-md text-white text-[11px] font-bold px-2.5 py-1 rounded-lg">
+                                {{ product.category.name if product.category else 'Umumiy' }}
+                            </span>
+                        </div>
+
+                        <!-- Date Badge -->
+                        <div class="absolute bottom-3 left-3">
+                            <span class="bg-white/90 backdrop-blur-md text-slate-700 text-[10px] font-semibold px-2 py-0.5 rounded-md shadow-sm">
+                                <i class="fa-regular fa-clock mr-1 text-slate-400"></i>
+                                {{ product.created_at.strftime('%d.%m.%Y') if product.created_at else 'Yangi' }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Product Content -->
+                    <div class="p-4 flex-1 flex flex-col justify-between">
+                        <div>
+                            <!-- Title -->
+                            <h3 class="text-base font-bold text-slate-900 group-hover:text-brand-600 transition line-clamp-1">
+                                <a href="/products/{{ product.id }}">
+                                    {{ product.title }}
+                                </a>
+                            </h3>
+
+                            <!-- Description -->
+                            <p class="text-xs text-slate-500 mt-1.5 line-clamp-2 leading-relaxed">
+                                {{ product.description }}
+                            </p>
+                        </div>
+
+                        <!-- Price & Seller Info -->
+                        <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+                            <div>
+                                <span class="text-xs text-slate-400 font-medium block">Narxi:</span>
+                                <span class="text-lg font-black text-brand-700">
+                                    {{ "{:,.0f}".format(product.price)|replace(",", " ") }} <span class="text-xs font-bold text-slate-600">so'm</span>
+                                </span>
+                            </div>
+
+                            <!-- Seller Info -->
+                            {% if product.owner %}
+                            <div class="text-right">
+                                <span class="text-[10px] text-slate-400 block font-medium">Sotuvchi:</span>
+                                <span class="text-xs font-semibold text-slate-700 truncate max-w-[100px] block">
+                                    {{ product.owner.first_name if product.owner.first_name else product.owner.username }}
+                                </span>
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <!-- Action Buttons (Savatcha & Detail) -->
+                        <div class="mt-4 grid grid-cols-5 gap-2">
+                            <!-- Detail Button -->
+                            <a 
+                                href="/products/{{ product.id }}" 
+                                class="col-span-3 text-center py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition flex items-center justify-center gap-1"
+                            >
+                                <i class="fa-solid fa-eye text-xs"></i>
+                                <span>Batafsil</span>
+                            </a>
+
+                            <!-- Add to Cart Button -->
+                            <form action="/cart/add/{{ product.id }}" method="POST" class="col-span-2">
+                                <button 
+                                    type="submit" 
+                                    class="w-full py-2 px-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold shadow-sm hover:shadow-glow transition flex items-center justify-center gap-1.5"
+                                    title="Savatchaga qo'shish"
+                                >
+                                    <i class="fa-solid fa-cart-plus"></i>
+                                </button>
+                            </form>
+                        </div>
+
+                    </div>
+
+                </div>
+                {% endfor %}
+            </div>
+
+            <!-- PAGINATION -->
+            {% if products is defined and products.pages is defined and products.pages > 1 %}
+            <div class="mt-12 flex justify-center items-center gap-2">
+                
+                <!-- Prev Button -->
+                {% if products.has_prev %}
+                <a href="{{ url_for('main.home_page', page=products.prev_num, q=request.args.get('q', ''), category_id=request.args.get('category_id', ''), sort=request.args.get('sort', '')) }}" class="px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 transition shadow-sm flex items-center gap-1">
+                    <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                    <span>Oldingi</span>
+                </a>
+                {% endif %}
+
+                <!-- Page Numbers -->
+                {% for page_num in products.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+                    {% if page_num %}
+                        {% if products.page == page_num %}
+                            <span class="w-9 h-9 rounded-xl bg-brand-600 text-white font-bold text-xs flex items-center justify-center shadow-sm">
+                                {{ page_num }}
+                            </span>
+                        {% else %}
+                            <a href="{{ url_for('main.home_page', page=page_num, q=request.args.get('q', ''), category_id=request.args.get('category_id', ''), sort=request.args.get('sort', '')) }}" class="w-9 h-9 rounded-xl bg-white border border-slate-200 text-slate-700 font-bold text-xs flex items-center justify-center hover:bg-slate-50 transition shadow-sm">
+                                {{ page_num }}
+                            </a>
+                        {% endif %}
+                    {% else %}
+                        <span class="px-2 text-slate-400 font-bold text-xs">...</span>
+                    {% endif %}
+                {% endfor %}
+
+                <!-- Next Button -->
+                {% if products.has_next %}
+                <a href="{{ url_for('main.home_page', page=products.next_num, q=request.args.get('q', ''), category_id=request.args.get('category_id', ''), sort=request.args.get('sort', '')) }}" class="px-3.5 py-2 rounded-xl bg-white border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 transition shadow-sm flex items-center gap-1">
+                    <span>Keyingi</span>
+                    <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                </a>
+                {% endif %}
+
+            </div>
+            {% endif %}
+
+        {% else %}
+            <!-- Demo Preview & Empty State Guide -->
+            <!-- If no DB data is passed yet, show modern preview cards so user sees the rich UI right away -->
+            <div class="pt-6">
+                
+                <!-- Notice Banner -->
+                <div class="mb-6 p-4 rounded-2xl bg-brand-50 border border-brand-200 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-brand-900">
+                    <div class="flex items-center gap-3">
+                        <div class="w-9 h-9 rounded-xl bg-brand-600 text-white flex items-center justify-center font-bold text-sm">
+                            <i class="fa-solid fa-sparkles"></i>
+                        </div>
+                        <div>
+                            <p class="text-sm font-bold">UI namunasi faol holatda!</p>
+                            <p class="text-xs text-brand-700">Python view'dan `products` va `categories` o'zgaruvchilarini uzatsangiz, ushbu joyda bazadagi haqiqiy ma'lumotlar chiqadi.</p>
+                        </div>
+                    </div>
+                    <a href="/products/add" class="bg-brand-600 hover:bg-brand-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-sm transition flex-shrink-0">
+                        + E'lon qo'shish
+                    </a>
+                </div>
+
+                <!-- Sample Demo Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    
+                    <!-- Demo Card 1 -->
+                    <div class="product-card bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-sm flex flex-col group">
+                        <div class="relative aspect-[4/3] bg-slate-900 overflow-hidden flex items-center justify-center">
+                            <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=600&auto=format&fit=crop&q=80" alt="iPhone 15 Pro Max" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div class="absolute top-3 left-3">
+                                <span class="bg-slate-900/80 backdrop-blur-md text-white text-[11px] font-bold px-2.5 py-1 rounded-lg">Elektronika</span>
+                            </div>
+                            <div class="absolute bottom-3 left-3">
+                                <span class="bg-white/90 backdrop-blur-md text-slate-700 text-[10px] font-semibold px-2 py-0.5 rounded-md shadow-sm">
+                                    <i class="fa-regular fa-clock mr-1 text-slate-400"></i> Bugun
+                                </span>
+                            </div>
+                        </div>
+                        <div class="p-4 flex-1 flex flex-col justify-between">
+                            <div>
+                                <h3 class="text-base font-bold text-slate-900 group-hover:text-brand-600 transition line-clamp-1">iPhone 15 Pro Max 256GB Natural Titanium</h3>
+                                <p class="text-xs text-slate-500 mt-1.5 line-clamp-2 leading-relaxed">Ideal holatda, quti va hujjatlari bor. Batareya 100%, hech qanday chizig'i yo'q.</p>
+                            </div>
+                            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+                                <div>
+                                    <span class="text-xs text-slate-400 font-medium block">Narxi:</span>
+                                    <span class="text-lg font-black text-brand-700">14 500 000 <span class="text-xs font-bold text-slate-600">so'm</span></span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-[10px] text-slate-400 block font-medium">Sotuvchi:</span>
+                                    <span class="text-xs font-semibold text-slate-700">Anasxon U.</span>
+                                </div>
+                            </div>
+                            <div class="mt-4 grid grid-cols-5 gap-2">
+                                <a href="#" class="col-span-3 text-center py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition flex items-center justify-center gap-1">
+                                    <i class="fa-solid fa-eye text-xs"></i>
+                                    <span>Batafsil</span>
+                                </a>
+                                <button class="col-span-2 py-2 px-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold shadow-sm flex items-center justify-center gap-1">
+                                    <i class="fa-solid fa-cart-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Demo Card 2 -->
+                    <div class="product-card bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-sm flex flex-col group">
+                        <div class="relative aspect-[4/3] bg-slate-900 overflow-hidden flex items-center justify-center">
+                            <img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?w=600&auto=format&fit=crop&q=80" alt="MacBook Pro M3" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div class="absolute top-3 left-3">
+                                <span class="bg-slate-900/80 backdrop-blur-md text-white text-[11px] font-bold px-2.5 py-1 rounded-lg">Noutbuklar</span>
+                            </div>
+                            <div class="absolute bottom-3 left-3">
+                                <span class="bg-white/90 backdrop-blur-md text-slate-700 text-[10px] font-semibold px-2 py-0.5 rounded-md shadow-sm">
+                                    <i class="fa-regular fa-clock mr-1 text-slate-400"></i> Kecha
+                                </span>
+                            </div>
+                        </div>
+                        <div class="p-4 flex-1 flex flex-col justify-between">
+                            <div>
+                                <h3 class="text-base font-bold text-slate-900 group-hover:text-brand-600 transition line-clamp-1">MacBook Pro 16" M3 Max 36GB / 1TB</h3>
+                                <p class="text-xs text-slate-500 mt-1.5 line-clamp-2 leading-relaxed">Dasturchilar va dizaynerlar uchun eng kuchli noutbuk. Kafolat muddati mavjud.</p>
+                            </div>
+                            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+                                <div>
+                                    <span class="text-xs text-slate-400 font-medium block">Narxi:</span>
+                                    <span class="text-lg font-black text-brand-700">32 000 000 <span class="text-xs font-bold text-slate-600">so'm</span></span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-[10px] text-slate-400 block font-medium">Sotuvchi:</span>
+                                    <span class="text-xs font-semibold text-slate-700">TechStore</span>
+                                </div>
+                            </div>
+                            <div class="mt-4 grid grid-cols-5 gap-2">
+                                <a href="#" class="col-span-3 text-center py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition flex items-center justify-center gap-1">
+                                    <i class="fa-solid fa-eye text-xs"></i>
+                                    <span>Batafsil</span>
+                                </a>
+                                <button class="col-span-2 py-2 px-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold shadow-sm flex items-center justify-center gap-1">
+                                    <i class="fa-solid fa-cart-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Demo Card 3 -->
+                    <div class="product-card bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-sm flex flex-col group">
+                        <div class="relative aspect-[4/3] bg-slate-900 overflow-hidden flex items-center justify-center">
+                            <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=600&auto=format&fit=crop&q=80" alt="Nike Air Max" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div class="absolute top-3 left-3">
+                                <span class="bg-slate-900/80 backdrop-blur-md text-white text-[11px] font-bold px-2.5 py-1 rounded-lg">Kiyim-kechak</span>
+                            </div>
+                            <div class="absolute bottom-3 left-3">
+                                <span class="bg-white/90 backdrop-blur-md text-slate-700 text-[10px] font-semibold px-2 py-0.5 rounded-md shadow-sm">
+                                    <i class="fa-regular fa-clock mr-1 text-slate-400"></i> 2 kun oldin
+                                </span>
+                            </div>
+                        </div>
+                        <div class="p-4 flex-1 flex flex-col justify-between">
+                            <div>
+                                <h3 class="text-base font-bold text-slate-900 group-hover:text-brand-600 transition line-clamp-1">Nike Air Max 270 Red Original (42 razmer)</h3>
+                                <p class="text-xs text-slate-500 mt-1.5 line-clamp-2 leading-relaxed">Original brend, yangi kiyilmagan. Toshkent bo'yicha bepul yetkazib berish mavjud.</p>
+                            </div>
+                            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+                                <div>
+                                    <span class="text-xs text-slate-400 font-medium block">Narxi:</span>
+                                    <span class="text-lg font-black text-brand-700">1 250 000 <span class="text-xs font-bold text-slate-600">so'm</span></span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-[10px] text-slate-400 block font-medium">Sotuvchi:</span>
+                                    <span class="text-xs font-semibold text-slate-700">SportShop</span>
+                                </div>
+                            </div>
+                            <div class="mt-4 grid grid-cols-5 gap-2">
+                                <a href="#" class="col-span-3 text-center py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition flex items-center justify-center gap-1">
+                                    <i class="fa-solid fa-eye text-xs"></i>
+                                    <span>Batafsil</span>
+                                </a>
+                                <button class="col-span-2 py-2 px-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold shadow-sm flex items-center justify-center gap-1">
+                                    <i class="fa-solid fa-cart-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Demo Card 4 -->
+                    <div class="product-card bg-white rounded-2xl border border-slate-200/90 overflow-hidden shadow-sm flex flex-col group">
+                        <div class="relative aspect-[4/3] bg-slate-900 overflow-hidden flex items-center justify-center">
+                            <img src="https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=600&auto=format&fit=crop&q=80" alt="Sony WH-1000XM5" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500">
+                            <div class="absolute top-3 left-3">
+                                <span class="bg-slate-900/80 backdrop-blur-md text-white text-[11px] font-bold px-2.5 py-1 rounded-lg">Aksessuarlar</span>
+                            </div>
+                            <div class="absolute bottom-3 left-3">
+                                <span class="bg-white/90 backdrop-blur-md text-slate-700 text-[10px] font-semibold px-2 py-0.5 rounded-md shadow-sm">
+                                    <i class="fa-regular fa-clock mr-1 text-slate-400"></i> 3 kun oldin
+                                </span>
+                            </div>
+                        </div>
+                        <div class="p-4 flex-1 flex flex-col justify-between">
+                            <div>
+                                <h3 class="text-base font-bold text-slate-900 group-hover:text-brand-600 transition line-clamp-1">Sony WH-1000XM5 Wireless Headphones</h3>
+                                <p class="text-xs text-slate-500 mt-1.5 line-clamp-2 leading-relaxed">Eng yuqori shovqinni bekor qilish (ANC) texnologiyasi. Batareya 30 soatgacha yetadi.</p>
+                            </div>
+                            <div class="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between">
+                                <div>
+                                    <span class="text-xs text-slate-400 font-medium block">Narxi:</span>
+                                    <span class="text-lg font-black text-brand-700">3 800 000 <span class="text-xs font-bold text-slate-600">so'm</span></span>
+                                </div>
+                                <div class="text-right">
+                                    <span class="text-[10px] text-slate-400 block font-medium">Sotuvchi:</span>
+                                    <span class="text-xs font-semibold text-slate-700">SoundPro</span>
+                                </div>
+                            </div>
+                            <div class="mt-4 grid grid-cols-5 gap-2">
+                                <a href="#" class="col-span-3 text-center py-2 px-3 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition flex items-center justify-center gap-1">
+                                    <i class="fa-solid fa-eye text-xs"></i>
+                                    <span>Batafsil</span>
+                                </a>
+                                <button class="col-span-2 py-2 px-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white text-xs font-bold shadow-sm flex items-center justify-center gap-1">
+                                    <i class="fa-solid fa-cart-plus"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        {% endif %}
+
+    </section>
+
+
+    <!-- PROMO & CALL TO ACTION BANNER -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+        <div class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-900 via-brand-950 to-brand-900 p-8 sm:p-12 text-white shadow-2xl">
+            <!-- Background Elements -->
+            <div class="absolute right-0 top-0 bottom-0 w-1/2 bg-gradient-to-l from-brand-500/20 to-transparent pointer-events-none"></div>
+            <div class="absolute -right-10 -bottom-10 w-72 h-72 bg-accent-500/10 rounded-full blur-3xl pointer-events-none"></div>
+
+            <div class="relative z-10 max-w-2xl space-y-5">
+                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-500/20 border border-brand-400/30 text-brand-300 text-xs font-bold uppercase tracking-wider">
+                    <i class="fa-solid fa-bolt text-amber-400"></i> E'lon berish mutlaqo bepul
+                </span>
+                
+                <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight text-white leading-tight">
+                    Sotmoqchi bo'lgan buyumingiz bormi?
+                </h2>
+
+                <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+                    E'loningizni hoziroq bepul joylashtiring va butun O'zbekiston bo'ylab minglab real xaridorlarni tezda toping!
+                </p>
+
+                <div class="pt-2 flex flex-wrap items-center gap-4">
+                    <a href="/products/add" class="bg-brand-500 hover:bg-brand-600 text-white font-bold px-6 py-3 rounded-xl shadow-lg hover:shadow-glow transition duration-200 flex items-center gap-2 text-sm">
+                        <i class="fa-solid fa-circle-plus"></i>
+                        <span>E'lon joylashtirish</span>
+                    </a>
+                    <a href="/auth/register" class="bg-white/10 hover:bg-white/20 text-white font-bold px-5 py-3 rounded-xl border border-white/20 transition duration-200 text-sm">
+                        Ro'yxatdan o'tish
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <!-- WHY CHOOSE US (PERKS) SECTION -->
+    <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            
+            <div class="p-6 bg-white rounded-2xl border border-slate-200/80 shadow-soft flex items-start gap-4">
+                <div class="w-12 h-12 rounded-xl bg-brand-100 text-brand-600 flex items-center justify-center text-xl flex-shrink-0">
+                    <i class="fa-solid fa-bolt-lightning"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-slate-900">Tez va Qulay</h3>
+                    <p class="text-xs text-slate-500 mt-1 leading-relaxed">Bir necha soniyada kerakli mahsulotni qidiring, saralang va sotuvchi bilan to'g'ridan-to'g'ri bog'laning.</p>
+                </div>
+            </div>
+
+            <div class="p-6 bg-white rounded-2xl border border-slate-200/80 shadow-soft flex items-start gap-4">
+                <div class="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl flex-shrink-0">
+                    <i class="fa-solid fa-shield-halved"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-slate-900">Ishonchli va Xavfsiz</h3>
+                    <p class="text-xs text-slate-500 mt-1 leading-relaxed">Har bir e'lon va foydalanuvchi ma'lumotlari adminlar tomonidan nazorat qilib boriladi.</p>
+                </div>
+            </div>
+
+            <div class="p-6 bg-white rounded-2xl border border-slate-200/80 shadow-soft flex items-start gap-4">
+                <div class="w-12 h-12 rounded-xl bg-accent-500/10 text-accent-600 flex items-center justify-center text-xl flex-shrink-0">
+                    <i class="fa-solid fa-cart-arrow-down"></i>
+                </div>
+                <div>
+                    <h3 class="text-base font-bold text-slate-900">Qulay Savatcha</h3>
+                    <p class="text-xs text-slate-500 mt-1 leading-relaxed">Yoqtirgan mahsulotlaringizni savatchaga qo'shib boring va ularni bir joyda boshqaring.</p>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+</div>
+{% endblock %}

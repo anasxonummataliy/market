@@ -5,10 +5,14 @@ from sqlalchemy import DateTime, String, BigInteger, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
-from app.models import db
+from app.models import db, login_manager
 
 if TYPE_CHECKING:
     from models.product import Product
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(int(user_id))
 
 
 class User(db.Model):
