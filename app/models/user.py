@@ -1,10 +1,14 @@
 from datetime import datetime
+from typing import TYPE_CHECKING
 
 from sqlalchemy import DateTime, String, BigInteger, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
-from models import db, Product
+from app.models import db
+
+if TYPE_CHECKING:
+    from models.product import Product
 
 
 class User(db.Model):
@@ -18,4 +22,4 @@ class User(db.Model):
     is_admin: Mapped[bool] = mapped_column(Boolean(), default=False)
     created_at: Mapped[datetime] = mapped_column(DateTime(), default=datetime.now())
 
-    products: Mapped[list['Product']] = relationship('Product', back_populates='owner')
+    products: Mapped[list["Product"]] = relationship("Product", back_populates="owner")

@@ -4,7 +4,7 @@ from sqlalchemy import DateTime, Float, ForeignKey, String, BigInteger, Boolean
 from sqlalchemy.orm import Mapped, mapped_column
 
 
-from models import db
+from app.models import db
 
 
 class Product(db.Model):

@@ -5,7 +5,10 @@ from sqlalchemy import DateTime, Float, ForeignKey, String, BigInteger, Boolean
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 
-from models import db, Product
+from app.models import db
+
+if TYPE_CHECKING:
+    from models.product import Product
 
 
 class Cart(db.Model):
@@ -27,7 +30,11 @@ class CartItem(db.Model):
     id: Mapped[int] = mapped_column(BigInteger(), primary_key=True)
     quantity: Mapped[int] = mapped_column(BigInteger(), default=1, nullable=False)
 
-    product_id: Mapped[int] = mapped_column(BigInteger(), ForeignKey('products.id'), nullable=False)
-    cart_id: Mapped[int] = mapped_column(BigInteger(), ForeignKey('carts.id'), nullable=False)
+    product_id: Mapped[int] = mapped_column(
+        BigInteger(), ForeignKey("products.id"), nullable=False
+    )
+    cart_id: Mapped[int] = mapped_column(
+        BigInteger(), ForeignKey("carts.id"), nullable=False
+    )
 
-    product: Mapped['Product'] = relationship("Product", back_populates='cart_items')
+    product: Mapped["Product"] = relationship("Product", back_populates="cart_items")
